@@ -11,3 +11,5 @@ FreeRTOS_TAD_logs/
 project/Debug/
 
 *.launch
+
+lpc_chip_175x_6x/

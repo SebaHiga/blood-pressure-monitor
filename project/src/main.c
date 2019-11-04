@@ -37,7 +37,7 @@
 #define UART0_PORT		(0)
 #define UART0_TXD_PIN	(2)
 #define UART0_RXD_PIN	(3)
-#define UART0_BAUDRATE	(57600)
+#define UART0_BAUDRATE	(115200)
 
 
 /*ADC*/
@@ -51,7 +51,7 @@ void InitHardware(void);
 void TareaADC(void);
 void TareaLeeSerie(void);
 
-void UartSendData(char *c);
+void UART_send_string(char *c);
 
 int main(void) {
 
@@ -92,7 +92,7 @@ int main(void) {
 void TareaADC(void)
 {
 	uint16_t val=0;
-	char msg[5];
+	char msg[16];
 
 	if(tareaAdc_start)
 	{
@@ -100,12 +100,12 @@ void TareaADC(void)
 			{
 				Chip_ADC_ReadValue(LPC_ADC,ADC_CH5,&val);
 
-				if((Chip_UART_ReadLineStatus(LPC_UART0) & UART_LSR_THRE))
-					memset(msg,'\0',5);
-					sprintf(msg,"%d",val);
-					UartSendData(msg);
-
-				Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
+				if((Chip_UART_ReadLineStatus(LPC_UART0) & UART_LSR_THRE)){
+					memset(msg,'\0',16);
+					sprintf(msg,"%d\r\n",val);
+					UART_send_string(msg);
+					Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
+				}
 			}
 	}
 }
@@ -113,24 +113,52 @@ void TareaADC(void)
 
 void TareaLeeSerie(void)
 {
-	uint8_t byte = '\0';
+	char byte = '\0';
+	static char str[255] = {'\0'};
+	static int index = 0;
+	static bool sending = false;
 
-			if(Chip_UART_ReadLineStatus(LPC_UART0)&UART_LSR_RDR)
-			{
-				byte = Chip_UART_ReadByte(LPC_UART0);
-				if(byte =='b')
+	if(Chip_UART_ReadLineStatus(LPC_UART0)&UART_LSR_RDR)
+	{
+		//Start reading serial
+		byte = Chip_UART_ReadByte(LPC_UART0);
+		if(!sending){
+			if(byte != '\n'){
+				sending = true;
+				index = 0;
+				str[index] = byte;
+			}
+		}
+		//Keep reading till \n
+		else{
+			index++;
+			//Found stop of serial string
+			if(byte == '\n'){
+				str[index] = '\0';
+
+				//Compare for each string
+				if(strcmp(str, "start") == 0)
 				{
 					Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
 					tareaAdc_start= 1;
 					Chip_GPIO_SetPinOutHigh(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
 				}
-				else if(byte =='c')
+				else if(strcmp(str, "stop") == 0)
 				{
 					tareaAdc_start= 0;
 					Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
 				}
-			}
 
+				memset(str, '\0', 255);
+				sending = false;
+				index = 0;
+			}
+			//Append byte on string
+			else{
+				str[index] = byte;
+			}
+		}
+	}
 }
 
 
@@ -188,13 +216,11 @@ void InitHardware(void)
 	Chip_ADC_Init(LPC_ADC,&adc_setup);
 	Chip_ADC_EnableChannel(LPC_ADC,ADC_CH5,ENABLE);
 	Chip_ADC_ReadValue(LPC_ADC,ADC_CH5,&dummy);
-
 }
 
-void UartSendData(char *c)
+void UART_send_string(char *c)
 {
-	for(int i=0;i<strlen(c);i++)
+	for(int i=0; i<strlen(c); i++){
 		Chip_UART_SendByte(LPC_UART0,c[i]);
-	Chip_UART_SendByte(LPC_UART0,'\r');
-	Chip_UART_SendByte(LPC_UART0,'\n');
+	}
 }
