@@ -1,0 +1,13 @@
+/.metadata/
+
+\.mcuxpressoide_packages_support/
+
+lpc_chip_175x_6x/\.settings/
+
+project/\.settings/
+
+FreeRTOS_TAD_logs/
+
+project/Debug/
+
+*.launch
