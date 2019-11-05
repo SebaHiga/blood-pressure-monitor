@@ -51,7 +51,9 @@ void InitHardware(void);
 void TareaADC(void);
 void TareaLeeSerie(void);
 
-void UART_send_string(char *c);
+int Task_delay(int*, int);
+
+void UART_send_string(char*);
 
 int main(void) {
 
@@ -88,6 +90,27 @@ int main(void) {
 		Chip_GPIO_SetPinToggle(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
 	}
 }*/
+int Task_delay(int *count, int total){
+	if(*count){
+		*count--;
+		return 1;
+	}
+
+	*count = total;
+	return 0;
+}
+
+#define delay(ticks)			\
+{								\
+	static int count = ticks;	\
+	if(count){					\
+		count--;				\
+		return;					\
+	}							\
+	else {						\
+		count = ticks;			\
+	}							\
+}								\
 
 void TareaADC(void)
 {
@@ -96,9 +119,11 @@ void TareaADC(void)
 
 	if(tareaAdc_start)
 	{
+			delay(250);
+
 			if(Chip_ADC_ReadStatus(LPC_ADC,ADC_CH5,ADC_DR_DONE_STAT))
 			{
-				Chip_ADC_ReadValue(LPC_ADC,ADC_CH5,&val);
+				Chip_ADC_ReadValue(LPC_ADC,ADC_CH5, &val);
 
 				if((Chip_UART_ReadLineStatus(LPC_UART0) & UART_LSR_THRE)){
 					memset(msg,'\0',16);
@@ -213,14 +238,17 @@ void InitHardware(void)
 	ADC_CLOCK_SETUP_T adc_setup;
 	uint16_t dummy;
 	Chip_IOCON_PinMuxSet(LPC_IOCON,1,31,IOCON_FUNC3);
-	Chip_ADC_Init(LPC_ADC,&adc_setup);
+	Chip_ADC_Init(LPC_ADC, &adc_setup);
 	Chip_ADC_EnableChannel(LPC_ADC,ADC_CH5,ENABLE);
 	Chip_ADC_ReadValue(LPC_ADC,ADC_CH5,&dummy);
+	Chip_ADC_SetSampleRate(LPC_ADC, &adc_setup, 10);
 }
 
-void UART_send_string(char *c)
-{
-	for(int i=0; i<strlen(c); i++){
-		Chip_UART_SendByte(LPC_UART0,c[i]);
+void UART_send_string(char *c){
+	int len = strlen(c);
+
+	for(int i=0; i < len; i++){
+		Chip_UART_SendByte(LPC_UART0, c[i]);
 	}
 }
+
