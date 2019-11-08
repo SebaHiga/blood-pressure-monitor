@@ -119,12 +119,12 @@ void TareaADC(void)
 
 	if(tareaAdc_start)
 	{
-			delay(250);
+			delay(10);
 
-			if(Chip_ADC_ReadStatus(LPC_ADC,ADC_CH5,ADC_DR_DONE_STAT))
-			{
+			if(Chip_ADC_ReadStatus(LPC_ADC,ADC_CH5,ADC_DR_DONE_STAT)){
 				Chip_ADC_ReadValue(LPC_ADC,ADC_CH5, &val);
 
+				//hay que hacer push y pops en una cola y que otra tarea mande los datos pero bue jaja
 				if((Chip_UART_ReadLineStatus(LPC_UART0) & UART_LSR_THRE)){
 					memset(msg,'\0',16);
 					sprintf(msg,"%d\r\n",val);
@@ -239,9 +239,9 @@ void InitHardware(void)
 	uint16_t dummy;
 	Chip_IOCON_PinMuxSet(LPC_IOCON,1,31,IOCON_FUNC3);
 	Chip_ADC_Init(LPC_ADC, &adc_setup);
+	Chip_ADC_SetSampleRate(LPC_ADC, &adc_setup, 10000);
 	Chip_ADC_EnableChannel(LPC_ADC,ADC_CH5,ENABLE);
 	Chip_ADC_ReadValue(LPC_ADC,ADC_CH5,&dummy);
-	Chip_ADC_SetSampleRate(LPC_ADC, &adc_setup, 10);
 }
 
 void UART_send_string(char *c){

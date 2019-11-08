@@ -13,3 +13,7 @@ project/Debug/
 *.launch
 
 lpc_chip_175x_6x/
+
+\.vscode/
+
+project/\.cproject
