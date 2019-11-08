@@ -13,6 +13,7 @@
 #include "chip.h"
 #include "string.h"
 #include <stdio.h>
+#include <stdarg.h>
 #else
 #include "board.h"
 #endif
@@ -54,6 +55,7 @@ void TareaLeeSerie(void);
 int Task_delay(int*, int);
 
 void UART_send_string(char*);
+void UART_printf(const char*, ...);
 
 int main(void) {
 
@@ -90,15 +92,6 @@ int main(void) {
 		Chip_GPIO_SetPinToggle(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
 	}
 }*/
-int Task_delay(int *count, int total){
-	if(*count){
-		*count--;
-		return 1;
-	}
-
-	*count = total;
-	return 0;
-}
 
 #define delay(ticks)			\
 {								\
@@ -112,10 +105,22 @@ int Task_delay(int *count, int total){
 	}							\
 }								\
 
+void UART_printf(const char* format, ...){
+	va_list arguments;
+	char tmp[255] = {0};
+	
+	va_start(arguments, format);
+
+	vsprintf(tmp, format, arguments);
+
+	va_end(arguments);
+
+	UART_send_string(tmp);
+}
+
 void TareaADC(void)
 {
 	uint16_t val=0;
-	char msg[16];
 
 	if(tareaAdc_start)
 	{
@@ -126,9 +131,7 @@ void TareaADC(void)
 
 				//hay que hacer push y pops en una cola y que otra tarea mande los datos pero bue jaja
 				if((Chip_UART_ReadLineStatus(LPC_UART0) & UART_LSR_THRE)){
-					memset(msg,'\0',16);
-					sprintf(msg,"%d\r\n",val);
-					UART_send_string(msg);
+					UART_printf("%d\r\n", val);
 					Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
 				}
 			}
