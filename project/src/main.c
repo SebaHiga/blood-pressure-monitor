@@ -12,6 +12,8 @@
 #if defined(NO_BOARD_LIB)
 #include "chip.h"
 #include "string.h"
+#include "uart.h"
+#include "logger.h"
 #include <stdio.h>
 #include <stdarg.h>
 #else
@@ -20,6 +22,18 @@
 #endif
 
 #include <cr_section_macros.h>
+
+#define delay(ticks)			\
+{								\
+	static int _count = ticks;	\
+	if(_count){					\
+		_count--;				\
+		return;					\
+	}							\
+	else {						\
+		_count = ticks;			\
+	}							\
+}								\
 
 #define TIC_1MS 		(1000)
 #define TIC_LED_MS		(250)
@@ -34,13 +48,6 @@
 #define LED_VERDE_PORT	(2)
 #define LED_VERDE_PIN	(12)
 
-/*UART0*/
-#define UART0_PORT		(0)
-#define UART0_TXD_PIN	(2)
-#define UART0_RXD_PIN	(3)
-#define UART0_BAUDRATE	(115200)
-
-
 /*ADC*/
 #define ADC0_PORT		(0)
 #define ADC0_PIN		(23)
@@ -51,11 +58,6 @@ void InitHardware(void);
 //void TareaTickLed(void);
 void TareaADC(void);
 void TareaLeeSerie(void);
-
-int Task_delay(int*, int);
-
-void UART_send_string(char*);
-void UART_printf(const char*, ...);
 
 int main(void) {
 
@@ -72,6 +74,10 @@ int main(void) {
 #endif
     InitHardware();
 
+    log_setLevel(info);
+
+
+
     while(1) {
 
 //    TareaTickLed();
@@ -83,57 +89,24 @@ int main(void) {
     return 0 ;
 }
 
-/*void TareaTickLed(void)
-{
-	static int espera = TIC_LED_MS;
-	if(!--espera)
-	{
-		espera = TIC_LED_MS;
-		Chip_GPIO_SetPinToggle(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
-	}
-}*/
 
-#define delay(ticks)			\
-{								\
-	static int _count = ticks;	\
-	if(_count){					\
-		_count--;				\
-		return;					\
-	}							\
-	else {						\
-		_count = ticks;			\
-	}							\
-}								\
-
-void UART_printf(const char* format, ...){
-	va_list arguments;
-	char tmp[255] = {0};
-	
-	va_start(arguments, format);
-
-	vsprintf(tmp, format, arguments);
-
-	va_end(arguments);
-
-	UART_send_string(tmp);
-}
 
 void TareaADC(void)
 {
 	uint16_t val=0;
 
+	delay(1000);
+	log_printf(__func__, info, "ADC flag: %d", tareaAdc_start);
+
 	if(tareaAdc_start)
 	{
-			delay(10);
+
 
 			if(Chip_ADC_ReadStatus(LPC_ADC,ADC_CH5,ADC_DR_DONE_STAT)){
 				Chip_ADC_ReadValue(LPC_ADC,ADC_CH5, &val);
 
-				//hay que hacer push y pops en una cola y que otra tarea mande los datos pero bue jaja
-				if((Chip_UART_ReadLineStatus(LPC_UART0) & UART_LSR_THRE)){
 					UART_printf("%d\r\n", val);
 					Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
-				}
 			}
 	}
 }
@@ -215,13 +188,7 @@ void InitHardware(void)
 	Chip_GPIO_SetPinOutHigh(LPC_GPIO,LED_VERDE_PORT,LED_VERDE_PIN);
 
 	/*Inicializo la UART*/
-	Chip_IOCON_PinMuxSet(LPC_IOCON,UART0_PORT,UART0_TXD_PIN,IOCON_FUNC1);
-	Chip_IOCON_PinMuxSet(LPC_IOCON,UART0_PORT,UART0_RXD_PIN,IOCON_FUNC1);
-	Chip_UART_Init(LPC_UART0);
-	Chip_UART_SetBaud(LPC_UART0,UART0_BAUDRATE);
-	Chip_UART_ConfigData(LPC_UART0, (UART_LCR_WLEN8 | UART_LCR_SBS_1BIT));
-	Chip_UART_SetupFIFOS(LPC_UART0, (UART_FCR_FIFO_EN | UART_FCR_TRG_LEV3));
-	Chip_UART_TXEnable(LPC_UART0);
+	UART_init();
 
 	/*Inicializo el systick*/
 	SysTick_Config(SystemCoreClock/TIC_1MS);
@@ -247,11 +214,4 @@ void InitHardware(void)
 	Chip_ADC_ReadValue(LPC_ADC,ADC_CH5,&dummy);
 }
 
-void UART_send_string(char *c){
-	int len = strlen(c);
-
-	for(int i=0; i < len; i++){
-		Chip_UART_SendByte(LPC_UART0, c[i]);
-	}
-}
 
