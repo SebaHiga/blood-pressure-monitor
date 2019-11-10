@@ -12,6 +12,7 @@
 #if defined(NO_BOARD_LIB)
 #include "chip.h"
 #include "string.h"
+#include "board.h"
 #include "uart.h"
 #include "logger.h"
 #include <stdio.h>
