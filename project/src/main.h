@@ -4,6 +4,7 @@
 typedef struct{
 	int adc_start;
 	int adc_delay;
+    int adc_pressure;
 }handler_t;
 
 #define delay(ticks)			\

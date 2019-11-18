@@ -4,8 +4,8 @@ static log_level_t _level;
 
 static const char *_level_str[] = {
 		"[MUTE]",
-		"[ERR]",
-		"[INF]",
+		"[ERRO]",
+		"[INFO]",
 		"[DEB0]",
 		"[DEB1]"
 };
@@ -31,7 +31,7 @@ void log_printf(const char* func_name, int level, const char* format, ...){
 	va_start(arguments, format);
 
 	vsprintf(tmp, format, arguments);
-    sprintf(str, "%s %s\t- %s\r\n", _level_str[level], func_name, tmp);
+    sprintf(str, "%s\t%s\t- %s\r\n", _level_str[level], func_name, tmp);
 
 	va_end(arguments);
 

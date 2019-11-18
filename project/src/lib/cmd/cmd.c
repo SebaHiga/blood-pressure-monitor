@@ -9,7 +9,6 @@
 
 extern handler_t handler;
 
-
 static const char *commands_str[] = {
     "adc",
     "logger"
@@ -79,12 +78,29 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
         Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
     }
     else if(EQUAL_STRINGS(argv[0], "delay")){
-        if(argc > 1){
-            handler.adc_delay = atoi(argv[1]);
+        if(argc < 1){
+            log_printf(__func__, error, "No value for delay\n");
+            return;
         }
+
+        handler.adc_delay = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "pressure")){
+        if(argc < 1){
+            log_printf(__func__, error, "No value for pressure\n");
+            return;
+        }
+
+        handler.adc_pressure = atoi(argv[1]);
+    }
+    else{
+        log_printf(__func__, error, "Error in argument %s\n", argv[0]);
     }
 }
 
+/*
+    logger level 1 -> sets logger's level to 1 (error)
+*/
 void CMD_logger(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     log_printf(__func__, debug0, "In command logger");
 
