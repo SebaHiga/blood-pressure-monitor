@@ -75,7 +75,7 @@ int main(void) {
 #endif
     InitHardware();
 
-    log_setLevel(info);
+    log_setLevel(debug0);
 
 
 
@@ -97,7 +97,7 @@ void TareaADC(void)
 	uint16_t val=0;
 
 	delay(1000);
-	log_printf(__func__, info, "ADC flag: %d", tareaAdc_start);
+	log_printf(__func__, debug1, "ADC flag: %d", tareaAdc_start);
 
 	if(tareaAdc_start)
 	{
@@ -138,7 +138,11 @@ void TareaLeeSerie(void)
 			if(byte == '\n'){
 				str[index] = '\0';
 
-				//Compare for each string
+				log_printf(__func__, debug1, "UART: %s\n", str);
+
+				CMD_parse(str);
+
+/* 				//Compare for each string
 				if(strcmp(str, "start") == 0)
 				{
 					Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
@@ -149,7 +153,7 @@ void TareaLeeSerie(void)
 				{
 					tareaAdc_start= 0;
 					Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
-				}
+				} */
 
 				memset(str, '\0', 255);
 				sending = false;

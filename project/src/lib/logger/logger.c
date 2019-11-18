@@ -5,8 +5,9 @@ static log_level_t _level;
 static const char *_level_str[] = {
 		"[MUTE]",
 		"[ERR]",
-		"[DEB]",
-		"[INF]"
+		"[INF]",
+		"[DEB0]",
+		"[DEB1]"
 };
 
 void log_setLevel(int level){
