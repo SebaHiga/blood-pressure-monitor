@@ -12,7 +12,10 @@
 #include "string.h"
 #include "logger.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
+#include "logger.h"
+#include "main.h"
 
 #define CMD_MAX_ARGS    5
 #define CMD_STRLEN_ARGS 20 
@@ -26,7 +29,7 @@ typedef void (*cmd_callback) (int, char[CMD_MAX_ARGS][CMD_STRLEN_ARGS]);
 
 void CMD_parse(const char*);
 
-void CMD_start(int, char[CMD_MAX_ARGS][CMD_STRLEN_ARGS]);
-void CMD_stop(int, char[CMD_MAX_ARGS][CMD_STRLEN_ARGS]);
+void CMD_adc(int, char[CMD_MAX_ARGS][CMD_STRLEN_ARGS]);
+void CMD_logger(int, char[CMD_MAX_ARGS][CMD_STRLEN_ARGS]);
 
 #endif /* LIB_CMD_CMD_H_ */

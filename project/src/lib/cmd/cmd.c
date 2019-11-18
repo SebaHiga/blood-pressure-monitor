@@ -7,14 +7,17 @@
 
 #include "cmd.h"
 
+extern handler_t handler;
+
+
 static const char *commands_str[] = {
-    "start",
-    "stop"
+    "adc",
+    "logger"
 };
 
 cmd_callback commands_fp[] = {
-    CMD_start,
-    CMD_stop
+    CMD_adc,
+    CMD_logger
 };
 
 void CMD_parse(const char* str){
@@ -26,7 +29,7 @@ void CMD_parse(const char* str){
 
     strcpy(tmp, str);
 
-    log_printf(__func__, debug0, "Received command: %s\n", tmp);
+    log_printf(__func__, debug0, "Received command: %s", tmp);
 
     for (uint8_t i = 0; i < len; i++)   //replace al spaces with null
     {
@@ -42,13 +45,11 @@ void CMD_parse(const char* str){
             argc++;
             i += strlen(tmp + i);
 
-            log_printf(__func__, debug0, "Parsed argument %d: %s\n", argc, argv[argc - 1]);
+            log_printf(__func__, debug0, "Parsed argument %d: %s", argc, argv[argc - 1]);
         }
     }
 
     int amount_commands = VECT_SIZE(commands_str);
-
-    log_printf(__func__, debug0, "Amount of commands: %d\n", amount_commands);
     
     for (int i = 0; i < amount_commands; i++)
     {
@@ -58,13 +59,39 @@ void CMD_parse(const char* str){
     }
 }
 
-void CMD_start(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
-    log_printf(__func__, debug0, "In command start\n");
- 
+/*
+    adc start -> starts converting
+    adc stop  -> stops converting
+    adc delay 1000 -> sets adc's delay to 1000ms
+*/
+void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
+    log_printf(__func__, debug0, "In command adc");
+
+    if(argc == 0) return;
+
+    if(EQUAL_STRINGS(argv[0], "start")){
+        Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
+        handler.adc_start = 1;
+        Chip_GPIO_SetPinOutHigh(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
+    }
+    else if(EQUAL_STRINGS(argv[0], "stop")){
+        handler.adc_start = 0;
+        Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
+    }
+    else if(EQUAL_STRINGS(argv[0], "delay")){
+        if(argc > 1){
+            handler.adc_delay = atoi(argv[1]);
+        }
+    }
 }
 
-void CMD_stop(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
-    log_printf(__func__, debug0, "In command stop\n");
+void CMD_logger(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
+    log_printf(__func__, debug0, "In command logger");
 
+    if(argc == 0) return;
 
+    if(EQUAL_STRINGS(argv[0], "level")){
+        if(argc < 1) return;
+        log_setLevel(atoi(argv[1]));
+    }
 }
