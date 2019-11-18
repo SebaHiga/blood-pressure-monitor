@@ -6,8 +6,9 @@
 typedef enum {
     mute = 0,
     error,
-    debug,
-    info
+    info,
+    debug0,
+    debug1
 }log_level_t;
 
 void log_setLevel(int);
