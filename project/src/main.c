@@ -67,25 +67,81 @@ int main(void) {
 }
 
 
+#define	ADC_VECT_TOTAL	32
+#define ADC_VECT_NOTAKE	8
+
+void bubbleSort(uint16_t * samples, uint8_t total){
+
+	for (uint8_t i = 0; i < total; i++){
+		uint16_t aux;
+		uint16_t min = 0;
+		uint16_t maximum = 0;
+		uint8_t where = 0;
+
+		for (uint8_t j = i; j < total; j++){
+			if(maximum < samples[j]){
+				maximum = samples[j];
+
+				where = j;
+			}
+		}
+
+		if(where){
+			aux = samples[i];
+			samples[i] = samples[where];
+			samples[where] = aux;	
+		}
+	}
+
+	for (uint8_t i = 0; i < total; i++)
+	{
+		log_printf(__func__, debug1, "Sorted: %d", samples[i]);
+	}
+	
+}
+
 
 void TareaADC(void)
 {
-	uint16_t val=0;
+	uint16_t val = 0;
+	uint16_t samples[ADC_VECT_TOTAL];
+	uint16_t accumulate = 0;
 
 	delay(handler.adc_delay);
 	log_printf(__func__, debug1, "ADC flag: %d", handler.adc_start);
 
 	if(handler.adc_start)
 	{
-			if(Chip_ADC_ReadStatus(LPC_ADC,ADC_CH0,ADC_DR_DONE_STAT)){
-				Chip_ADC_ReadValue(LPC_ADC,ADC_CH0, &val);
-				if(val < 4096){
-					UART_printf("%d %d\r\n", handler.adc_pressure, val);
-					Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
-				}
+		uint8_t i = 0;
+		
+		//read till buffer is full
+		while(i < ADC_VECT_TOTAL){
+			if(Chip_ADC_ReadStatus(LPC_ADC, ADC_CH0, ADC_DR_DONE_STAT)){
+				Chip_ADC_ReadValue(LPC_ADC, ADC_CH0, &val);
+
+				samples[i] = val;
+
+				i++;
+				Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);
 			}
+		}
+
+		//order buffer from MAX to min
+		bubbleSort(samples, ADC_VECT_TOTAL);
+
+		//accumulate values in the middle
+		for (uint8_t i = ADC_VECT_NOTAKE; i < (ADC_VECT_TOTAL - ADC_VECT_NOTAKE); i++){
+			accumulate += samples[i];
+		}
+		
+		//mean value of accumulated
+		val = accumulate / (ADC_VECT_TOTAL - ADC_VECT_NOTAKE*2);
+
+		UART_printf("%d %d\r\n", handler.adc_pressure, val);
 	}
 }
+
+
 
 
 void TareaLeeSerie(void)
