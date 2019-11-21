@@ -8,7 +8,15 @@ typedef enum {
     error,
     info,
     debug0,
-    debug1
+    debug1,
+    debug2,
+    debug3,
+    debug4,
+    debug5,
+    debug6,
+    debug7,
+    debug8,
+    debug9
 }log_level_t;
 
 void log_setLevel(int);

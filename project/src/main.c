@@ -8,54 +8,24 @@
 ===============================================================================
 */
 
-#if defined (__USE_LPCOPEN)
-#if defined(NO_BOARD_LIB)
-#include "chip.h"
-#include "string.h"
-#include "board.h"
-#include "uart.h"
-#include "logger.h"
-#include <stdio.h>
-#include <stdarg.h>
 #include "main.h"
-#include "cmd.h"
-#else
-#include "board.h"
-#endif
-#endif
-
-#include <cr_section_macros.h>
-
-
 
 handler_t handler;
 
 void InitHardware(void);
-//void TareaTickLed(void);
 void TareaADC(void);
 void TareaLeeSerie(void);
 
 int main(void) {
-
-#if defined (__USE_LPCOPEN)
-    // Read clock settings and update SystemCoreClock variable
-    SystemCoreClockUpdate();
-#if !defined(NO_BOARD_LIB)
-    // Set up and initialize all required blocks and
-    // functions related to the board hardware
-    Board_Init();
-    // Set the LED to the state of "On"
-    Board_LED_Set(0, true);
-#endif
-#endif
     InitHardware();
 
     log_setLevel(debug0);
 
 	//Default parameters
-	handler.adc_start = 0;
-	handler.adc_delay = 1000;
-	handler.adc_pressure = 0;
+	handler.adc.start = 0;
+	handler.adc.delay = 1000;
+	handler.adc.pressure = 0;
+	handler.adc.debug = 0;
 
     while(1) {
 	    TareaADC();
@@ -70,47 +40,16 @@ int main(void) {
 #define	ADC_VECT_TOTAL	32
 #define ADC_VECT_NOTAKE	8
 
-void bubbleSort(uint16_t * samples, uint8_t total){
-
-	for (uint8_t i = 0; i < total; i++){
-		uint16_t aux;
-		uint16_t min = 0;
-		uint16_t maximum = 0;
-		uint8_t where = 0;
-
-		for (uint8_t j = i; j < total; j++){
-			if(maximum < samples[j]){
-				maximum = samples[j];
-
-				where = j;
-			}
-		}
-
-		if(where){
-			aux = samples[i];
-			samples[i] = samples[where];
-			samples[where] = aux;	
-		}
-	}
-
-	for (uint8_t i = 0; i < total; i++)
-	{
-		log_printf(__func__, debug1, "Sorted: %d", samples[i]);
-	}
-	
-}
-
-
 void TareaADC(void)
 {
 	uint16_t val = 0;
 	uint16_t samples[ADC_VECT_TOTAL];
 	uint16_t accumulate = 0;
 
-	delay(handler.adc_delay);
-	log_printf(__func__, debug1, "ADC flag: %d", handler.adc_start);
+	delay(handler.adc.delay);
+	log_printf(__func__, debug5, "ADC flag: %d", handler.adc.start);
 
-	if(handler.adc_start)
+	if(handler.adc.start)
 	{
 		uint8_t i = 0;
 		
@@ -137,7 +76,9 @@ void TareaADC(void)
 		//mean value of accumulated
 		val = accumulate / (ADC_VECT_TOTAL - ADC_VECT_NOTAKE*2);
 
-		UART_printf("%d %d\r\n", handler.adc_pressure, val);
+		if(handler.adc.debug){
+			UART_printf("%d %d\r\n", handler.adc.pressure, val);
+		}
 	}
 }
 
@@ -169,7 +110,7 @@ void TareaLeeSerie(void)
 			if(byte == '\n'){
 				str[index] = '\0';
 
-				log_printf(__func__, debug1, "UART: %s\n", str);
+				log_printf(__func__, debug3, "UART: %s\n", str);
 
 				CMD_parse(str);
 

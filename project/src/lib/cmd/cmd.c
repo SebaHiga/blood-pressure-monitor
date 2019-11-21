@@ -70,11 +70,11 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
 
     if(EQUAL_STRINGS(argv[0], "start")){
         Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
-        handler.adc_start = 1;
+        handler.adc.start = 1;
         Chip_GPIO_SetPinOutHigh(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
     }
     else if(EQUAL_STRINGS(argv[0], "stop")){
-        handler.adc_start = 0;
+        handler.adc.start = 0;
         Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
     }
     else if(EQUAL_STRINGS(argv[0], "delay")){
@@ -83,15 +83,31 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
             return;
         }
 
-        handler.adc_delay = atoi(argv[1]);
+        //error prone
+        handler.adc.delay = atoi(argv[1]);
     }
+    else if(EQUAL_STRINGS(argv[0], "debug")){
+        if(argc < 1){
+            log_printf(__func__, error, "No value for delay\n");
+            return;
+        }
+
+        if(EQUAL_STRINGS(argv[1], "on")){
+            handler.adc.debug = 1;
+        }
+        else{
+            handler.adc.debug = 0;
+        }
+    }
+
     else if(EQUAL_STRINGS(argv[0], "pressure")){
         if(argc < 1){
             log_printf(__func__, error, "No value for pressure\n");
             return;
         }
 
-        handler.adc_pressure = atoi(argv[1]);
+        //error prone
+        handler.adc.pressure = atoi(argv[1]);
     }
     else{
         log_printf(__func__, error, "Error in argument %s\n", argv[0]);

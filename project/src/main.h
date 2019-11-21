@@ -1,15 +1,34 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
+
+#include "chip.h"
+#include "string.h"
+#include "board.h"
+#include "uart.h"
+#include "logger.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include "main.h"
+#include "cmd.h"
+#include "utils.h"
+
+#include <cr_section_macros.h>
+
 typedef struct{
-	int adc_start;
-	int adc_delay;
-    int adc_pressure;
+	int start;
+	int delay;
+    int pressure;
+	int debug;
+}adc_handler_t;
+
+typedef struct{
+	adc_handler_t adc;
 }handler_t;
 
 #define delay(ticks)			\
 {								\
-	static int _count = 0;	\
+	static int _count = 0;		\
 	if(_count){					\
 		_count--;				\
 		return;					\
