@@ -77,11 +77,12 @@ void TareaADC(void)
 
 	if(handler.adc_start)
 	{
-			if(Chip_ADC_ReadStatus(LPC_ADC,ADC_CH5,ADC_DR_DONE_STAT)){
-				Chip_ADC_ReadValue(LPC_ADC,ADC_CH5, &val);
-
-				UART_printf("%d %d\r\n", handler.adc_pressure, val);
-				Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
+			if(Chip_ADC_ReadStatus(LPC_ADC,ADC_CH0,ADC_DR_DONE_STAT)){
+				Chip_ADC_ReadValue(LPC_ADC,ADC_CH0, &val);
+				if(val < 4096){
+					UART_printf("%d %d\r\n", handler.adc_pressure, val);
+					Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
+				}
 			}
 	}
 }
@@ -163,19 +164,19 @@ void InitHardware(void)
 	Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
 	
 	// ADC_CLOCK_SETUP_T adc_setup;
-	// uint16_t dummy;
-	// Chip_IOCON_PinMuxSet(LPC_IOCON,ADC0_PORT,ADC0_PIN,IOCON_FUNC1);
-	// Chip_ADC_Init(LPC_ADC,&adc_setup);
-	// Chip_ADC_EnableChannel(LPC_ADC,ADC_CH0,ENABLE);
-	// Chip_ADC_ReadValue(LPC_ADC,ADC_CH0,&dummy);
-
-	// Inicializo el ADC5
 	ADC_CLOCK_SETUP_T adc_setup;
 	uint16_t dummy;
-	Chip_IOCON_PinMuxSet(LPC_IOCON,1,31,IOCON_FUNC3);
-	Chip_ADC_Init(LPC_ADC, &adc_setup);
-	Chip_ADC_EnableChannel(LPC_ADC,ADC_CH5,ENABLE);
-	Chip_ADC_ReadValue(LPC_ADC,ADC_CH5,&dummy);
+	Chip_IOCON_PinMuxSet(LPC_IOCON,ADC0_PORT,ADC0_PIN,IOCON_FUNC1);
+	Chip_ADC_Init(LPC_ADC,&adc_setup);
+	Chip_ADC_EnableChannel(LPC_ADC,ADC_CH0,ENABLE);
+	Chip_ADC_ReadValue(LPC_ADC,ADC_CH0,&dummy);
+
+	// Inicializo el ADC5
+	// uint16_t dummy;
+	// Chip_IOCON_PinMuxSet(LPC_IOCON,1,31,IOCON_FUNC3);
+	// Chip_ADC_Init(LPC_ADC, &adc_setup);
+	// Chip_ADC_EnableChannel(LPC_ADC,ADC_CH5,ENABLE);
+	// Chip_ADC_ReadValue(LPC_ADC,ADC_CH5,&dummy);
 }
 
 
