@@ -76,6 +76,9 @@ void TareaADC(void)
 		//mean value of accumulated
 		val = accumulate / (ADC_VECT_TOTAL - ADC_VECT_NOTAKE*2);
 
+		//low pass filtered
+		val = iirFilterLP(val);
+
 		if(handler.adc.debug){
 			UART_printf("%d, %d\r\n", val, handler.adc.pressure);
 		}
