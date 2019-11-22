@@ -77,7 +77,7 @@ void TareaADC(void)
 		val = accumulate / (ADC_VECT_TOTAL - ADC_VECT_NOTAKE*2);
 
 		if(handler.adc.debug){
-			UART_printf("%d %d\r\n", handler.adc.pressure, val);
+			UART_printf("%d, %d\r\n", val, handler.adc.pressure);
 		}
 	}
 }
