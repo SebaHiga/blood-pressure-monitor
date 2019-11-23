@@ -28,7 +28,7 @@ void CMD_parse(const char* str){
 
     strcpy(tmp, str);
 
-    log_printf(__func__, debug0, "Received command: %s", tmp);
+    _log(debug0, "Received command: %s", tmp);
 
     for (uint8_t i = 0; i < len; i++)   //replace al spaces with null
     {
@@ -44,7 +44,7 @@ void CMD_parse(const char* str){
             argc++;
             i += strlen(tmp + i);
 
-            log_printf(__func__, debug0, "Parsed argument %d: %s", argc, argv[argc - 1]);
+            _log(debug0, "Parsed argument %d: %s", argc, argv[argc - 1]);
         }
     }
 
@@ -64,7 +64,7 @@ void CMD_parse(const char* str){
     adc delay 1000 -> sets adc's delay to 1000ms
 */
 void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
-    log_printf(__func__, debug0, "In command adc");
+    _log_smpl(debug0, "In command adc");
 
     if(argc == 0) return;
 
@@ -79,7 +79,7 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     }
     else if(EQUAL_STRINGS(argv[0], "delay")){
         if(argc < 1){
-            log_printf(__func__, error, "No value for delay\n");
+            _log_smpl(error, "No value for delay\n");
             return;
         }
 
@@ -88,7 +88,7 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     }
     else if(EQUAL_STRINGS(argv[0], "debug")){
         if(argc < 1){
-            log_printf(__func__, error, "No value for delay\n");
+            _log_smpl(error, "No value for delay\n");
             return;
         }
 
@@ -102,7 +102,7 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
 
     else if(EQUAL_STRINGS(argv[0], "pressure")){
         if(argc < 1){
-            log_printf(__func__, error, "No value for pressure\n");
+            _log_smpl(error, "No value for pressure\n");
             return;
         }
 
@@ -110,7 +110,7 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
         handler.adc.pressure = atoi(argv[1]);
     }
     else{
-        log_printf(__func__, error, "Error in argument %s\n", argv[0]);
+        _log(error, "Error in argument %s\n", argv[0]);
     }
 }
 
@@ -118,7 +118,7 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     logger level 1 -> sets logger's level to 1 (error)
 */
 void CMD_logger(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
-    log_printf(__func__, debug0, "In command logger");
+    _log_smpl(debug0, "In command logger");
 
     if(argc == 0) return;
 

@@ -12,18 +12,25 @@
 #include "main.h"
 #include "cmd.h"
 #include "utils.h"
+#include "filter.h"
 
 #include <cr_section_macros.h>
+
+#include "tasks.h"
 
 typedef struct{
 	int start;
 	int delay;
     int pressure;
 	int debug;
+	int new_val;
+
+	int val;
 }adc_handler_t;
 
 typedef struct{
 	adc_handler_t adc;
+	sp_handler_t sp;
 }handler_t;
 
 #define delay(ticks)			\
@@ -54,5 +61,10 @@ typedef struct{
 /*ADC*/
 #define ADC0_PORT		(0)
 #define ADC0_PIN		(23)
+
+void InitHardware(void);
+void TareaADC(void);
+void TareaLeeSerie(void);
+void Task_SignalProcess(void);
 
 #endif

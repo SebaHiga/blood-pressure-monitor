@@ -12,10 +12,6 @@
 
 handler_t handler;
 
-void InitHardware(void);
-void TareaADC(void);
-void TareaLeeSerie(void);
-
 int main(void) {
     InitHardware();
 
@@ -26,11 +22,16 @@ int main(void) {
 	handler.adc.delay = 1000;
 	handler.adc.pressure = 0;
 	handler.adc.debug = 0;
+	handler.adc.new_val = 0;
+
+	handler.sp.status = 0;
+	handler.sp.offset = 0;
 
     while(1) {
 	    TareaADC();
     	TareaLeeSerie();
-
+		Task_SignalProcess();
+		
    		__WFI();
     }
     return 0 ;
@@ -47,7 +48,7 @@ void TareaADC(void)
 	uint16_t accumulate = 0;
 
 	delay(handler.adc.delay);
-	log_printf(__func__, debug5, "ADC flag: %d", handler.adc.start);
+	_log(debug5, "ADC flag: %d", handler.adc.start);
 
 	if(handler.adc.start)
 	{
@@ -78,6 +79,15 @@ void TareaADC(void)
 
 		//low pass filtered
 		val = iirFilterLP(val);
+
+		if(handler.sp.offset){
+			handler.adc.new_val = 1;
+			handler.adc.val = val - handler.sp.offset;
+		}
+		else{
+			handler.adc.new_val = 1;
+			handler.adc.val = val;	
+		}
 
 		if(handler.adc.debug){
 			UART_printf("%d, %d\r\n", val, handler.adc.pressure);
@@ -113,7 +123,7 @@ void TareaLeeSerie(void)
 			if(byte == '\n'){
 				str[index] = '\0';
 
-				log_printf(__func__, debug3, "UART: %s\n", str);
+				_log(debug3, "UART: %s\n", str);
 
 				CMD_parse(str);
 
