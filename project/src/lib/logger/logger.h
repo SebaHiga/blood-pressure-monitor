@@ -3,6 +3,10 @@
 
 #include <uart.h>
 
+#define _log(level, format, ...) log_printf(__func__, level, format,__VA_ARGS__)
+#define _log_smpl(level, format) log_printf(__func__, level, format)
+
+
 typedef enum {
     mute = 0,
     error,
