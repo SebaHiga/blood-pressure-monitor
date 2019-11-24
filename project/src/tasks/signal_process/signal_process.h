@@ -1,6 +1,8 @@
 #ifndef __SIGNAL_PROCESS_H__
 #define __SIGNAL_PROCESS_H__
 
+#include "tasks.h"
+
 struct sp_status_t{
     enum sig_process_status_t{
         offset = 0,
@@ -17,7 +19,7 @@ typedef struct{
     int debug;
 } sp_handler_t;
 
-float Convert2mmHg (uint16_t value);
+float Convert2mmHg (int value);
 void Task_SignalProcess(void);
 
 #endif

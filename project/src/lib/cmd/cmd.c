@@ -69,7 +69,6 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     if(argc == 0) return;
 
     if(EQUAL_STRINGS(argv[0], "start")){
-        Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
         handler.adc.start = 1;
         Chip_GPIO_SetPinOutHigh(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
     }
