@@ -29,23 +29,29 @@ void Task_SignalProcess(void){
     }
 }
 
-uint16_t max, min;
+int max, min;
 
-void processPulse(uint16_t val){
+void processPulse(int val){
     static pulse_state_t state = rising;
+    static int len = 0;
+
+    if(val >= MAX_VAL) state = rising;
 
     switch(state){
         case rising:{
             //comienza a crecer
             if(val > handler.sp.pulse_param.upper){
-                _log_smpl(debug1, "Going to middle state");
+                _log_smpl(debug3, "Going to middle state");
                 max = 0;
                 min = MAX_VAL;
                 state = middle;
+                len = 0;
             }
         }break;
 
         case middle:{
+            len++;
+
             //busco el maximo
             if(val > max){
                 max = val;
@@ -58,6 +64,8 @@ void processPulse(uint16_t val){
         }break;
 
         case falling:{
+            len++;
+
             //busco el minimo
             if(val < min){
                 min = val;
@@ -65,9 +73,16 @@ void processPulse(uint16_t val){
 
             if(val > handler.sp.pulse_param.fall){
                 _log(debug1, "Fall value reached, minimum peak is %d", min);
-                state = rising;
 
-                _log(debug0, "Pulse height is: %d", max - min);
+                int height = max - min;
+
+                if(height < handler.sp.pulse_param.max_height 
+                    && len < handler.sp.pulse_param.min_lenght){
+
+                    _log(info, "Pulse height is: %d", height);
+                }
+
+                state = rising;
             }
         }break;
     }

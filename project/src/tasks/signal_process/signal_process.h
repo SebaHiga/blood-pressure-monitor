@@ -5,12 +5,13 @@
 
 #define   MAX_PRESSURE   25341
 
-#define   UPPER_VAL      1200
-#define   MIDDLE_VAL     950
-#define   FALL_VAL       800
-#define   MAX_VAL        4000
-#define   MIN_VAL       -4000
-#define   MIN_WAIT_TIME  8
+#define   UPPER_VAL         200
+#define   MIDDLE_VAL        0
+#define   FALL_VAL          50         
+#define   MAX_VAL           4000
+#define   MIN_VAL           -4000
+#define   MAX_HEIGHT        3000
+#define   MIN_LENGHT        4
 
 enum sig_process_status_t{
     idle = 0,
@@ -28,7 +29,8 @@ typedef struct{
     uint16_t upper;
     uint16_t middle;
     uint16_t fall;
-    uint16_t min, max;
+    uint16_t max_height;
+    uint16_t min_lenght;
 }pulse_parameters_t;
 
 typedef struct{
@@ -40,7 +42,7 @@ typedef struct{
 } sp_handler_t;
 
 float Convert2mmHg (int value);
-void processPulse(uint16_t value);
+void processPulse(int value);
 void Task_SignalProcess(void);
 
 #endif

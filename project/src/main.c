@@ -24,14 +24,17 @@ int main(void) {
 	handler.adc.debug = 0;
 	handler.adc.new_val = 0;
 
+	//signal process
 	handler.sp.status = 0;
 	handler.sp.offset = 0;
+	handler.sp.status = measuring;
 
+	//pulse
 	handler.sp.pulse_param.upper = UPPER_VAL;
 	handler.sp.pulse_param.middle = MIDDLE_VAL;
 	handler.sp.pulse_param.fall = FALL_VAL;
-	handler.sp.pulse_param.min = MIN_VAL;
-	handler.sp.pulse_param.max = MAX_VAL;
+	handler.sp.pulse_param.min_lenght = MIN_LENGHT;
+	handler.sp.pulse_param.max_height = MAX_HEIGHT;
 
     while(1) {
     	TareaLeeSerie();
