@@ -77,7 +77,7 @@ void processPulse(int val){
                 int height = max - min;
 
                 if(height < handler.sp.pulse_param.max_height 
-                    && len < handler.sp.pulse_param.min_lenght){
+                    && len > handler.sp.pulse_param.min_lenght){
 
                     _log(info, "Pulse height is: %d", height);
                 }

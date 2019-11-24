@@ -140,17 +140,27 @@ void CMD_pulse(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
 
     if(EQUAL_STRINGS(argv[0], "upper")){
         if(argc < 1) return;
-        _log(debug1, "Setting %s to %d", argv[0], atoi(argv[1]));
         handler.sp.pulse_param.upper = atoi(argv[1]);
     }
     else if(EQUAL_STRINGS(argv[0], "middle")){
         if(argc < 1) return;
-        _log(debug1, "Setting %s to %d", argv[0], atoi(argv[1]));
         handler.sp.pulse_param.middle = atoi(argv[1]);
     }
     else if(EQUAL_STRINGS(argv[0], "fall")){
         if(argc < 1) return;
-        _log(debug1, "Setting %s to %d", argv[0], atoi(argv[1]));
         handler.sp.pulse_param.fall = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "height")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.max_height = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "lenght")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.min_lenght = atoi(argv[1]);
+    }
+
+    
+    if(argc > 1){
+        _log(debug1, "Setting %s to %d", argv[0], atoi(argv[1]));
     }
 }
