@@ -19,16 +19,6 @@
 #include "tasks.h"
 
 typedef struct{
-	int start;
-	int delay;
-    int pressure;
-	int debug;
-	int new_val;
-
-	int val;
-}adc_handler_t;
-
-typedef struct{
 	adc_handler_t adc;
 	sp_handler_t sp;
 }handler_t;
@@ -58,13 +48,9 @@ typedef struct{
 #define LED_VERDE_PORT	(2)
 #define LED_VERDE_PIN	(12)
 
-/*ADC*/
-#define ADC0_PORT		(0)
-#define ADC0_PIN		(23)
 
 void InitHardware(void);
-void TareaADC(void);
+
 void TareaLeeSerie(void);
-void Task_SignalProcess(void);
 
 #endif

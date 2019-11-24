@@ -2,5 +2,6 @@
 #define __TASKS_H__
 
 #include "signal_process.h"
+#include "adc.h"
 
 #endif
