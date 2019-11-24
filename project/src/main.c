@@ -19,7 +19,7 @@ int main(void) {
 
 	//Default parameters
 	handler.adc.start = 0;
-	handler.adc.delay = 1000;
+	handler.adc.delay = 2;
 	handler.adc.pressure = 0;
 	handler.adc.debug = 0;
 	handler.adc.new_val = 0;
@@ -28,75 +28,14 @@ int main(void) {
 	handler.sp.offset = 0;
 
     while(1) {
-	    TareaADC();
     	TareaLeeSerie();
+	    Task_ADC();
 		Task_SignalProcess();
 		
    		__WFI();
     }
     return 0 ;
 }
-
-
-#define	ADC_VECT_TOTAL	32
-#define ADC_VECT_NOTAKE	8
-
-void TareaADC(void)
-{
-	uint16_t val = 0;
-	uint16_t samples[ADC_VECT_TOTAL];
-	uint16_t accumulate = 0;
-
-	delay(handler.adc.delay);
-	_log(debug5, "ADC flag: %d", handler.adc.start);
-
-	if(handler.adc.start)
-	{
-		uint8_t i = 0;
-		
-		//read till buffer is full
-		while(i < ADC_VECT_TOTAL){
-			if(Chip_ADC_ReadStatus(LPC_ADC, ADC_CH0, ADC_DR_DONE_STAT)){
-				Chip_ADC_ReadValue(LPC_ADC, ADC_CH0, &val);
-
-				samples[i] = val;
-
-				i++;
-				Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);
-			}
-		}
-
-		//order buffer from MAX to min
-		bubbleSort(samples, ADC_VECT_TOTAL);
-
-		//accumulate values in the middle
-		for (uint8_t i = ADC_VECT_NOTAKE; i < (ADC_VECT_TOTAL - ADC_VECT_NOTAKE); i++){
-			accumulate += samples[i];
-		}
-		
-		//mean value of accumulated
-		val = accumulate / (ADC_VECT_TOTAL - ADC_VECT_NOTAKE*2);
-
-		//low pass filtered
-		val = iirFilterLP(val);
-
-		if(handler.sp.offset){
-			handler.adc.new_val = 1;
-			handler.adc.val = val - handler.sp.offset;
-		}
-		else{
-			handler.adc.new_val = 1;
-			handler.adc.val = val;	
-		}
-
-		if(handler.adc.debug){
-			UART_printf("%d, %d\r\n", val, handler.adc.pressure);
-		}
-	}
-}
-
-
-
 
 void TareaLeeSerie(void)
 {
@@ -177,16 +116,8 @@ void InitHardware(void)
 	ADC_CLOCK_SETUP_T adc_setup;
 	uint16_t dummy;
 	Chip_IOCON_PinMuxSet(LPC_IOCON,ADC0_PORT,ADC0_PIN,IOCON_FUNC1);
+	Chip_IOCON_PinMuxSet(LPC_IOCON, ADC1_PORT, ADC1_PIN, IOCON_FUNC1);
 	Chip_ADC_Init(LPC_ADC,&adc_setup);
-	Chip_ADC_EnableChannel(LPC_ADC,ADC_CH0,ENABLE);
-	Chip_ADC_ReadValue(LPC_ADC,ADC_CH0,&dummy);
-
-	// Inicializo el ADC5
-	// uint16_t dummy;
-	// Chip_IOCON_PinMuxSet(LPC_IOCON,1,31,IOCON_FUNC3);
-	// Chip_ADC_Init(LPC_ADC, &adc_setup);
-	// Chip_ADC_EnableChannel(LPC_ADC,ADC_CH5,ENABLE);
-	// Chip_ADC_ReadValue(LPC_ADC,ADC_CH5,&dummy);
 }
 
 
