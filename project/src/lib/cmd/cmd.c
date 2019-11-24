@@ -48,7 +48,7 @@ void CMD_parse(const char* str){
         }
     }
 
-    int amount_commands = VECT_SIZE(commands_str);
+    int amount_commands = N_ELEMENTS(commands_str);
     
     for (int i = 0; i < amount_commands; i++)
     {
