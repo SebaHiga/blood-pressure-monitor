@@ -27,6 +27,12 @@ int main(void) {
 	handler.sp.status = 0;
 	handler.sp.offset = 0;
 
+	handler.sp.pulse_param.upper = UPPER_VAL;
+	handler.sp.pulse_param.middle = MIDDLE_VAL;
+	handler.sp.pulse_param.fall = FALL_VAL;
+	handler.sp.pulse_param.min = MIN_VAL;
+	handler.sp.pulse_param.max = MAX_VAL;
+
     while(1) {
     	TareaLeeSerie();
 	    Task_ADC();
@@ -114,7 +120,6 @@ void InitHardware(void)
 	
 	// ADC_CLOCK_SETUP_T adc_setup;
 	ADC_CLOCK_SETUP_T adc_setup;
-	uint16_t dummy;
 	Chip_IOCON_PinMuxSet(LPC_IOCON,ADC0_PORT,ADC0_PIN,IOCON_FUNC1);
 	Chip_IOCON_PinMuxSet(LPC_IOCON, ADC1_PORT, ADC1_PIN, IOCON_FUNC1);
 	Chip_ADC_Init(LPC_ADC,&adc_setup);

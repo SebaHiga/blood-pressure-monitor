@@ -11,12 +11,14 @@ extern handler_t handler;
 
 static const char *commands_str[] = {
     "adc",
-    "logger"
+    "logger",
+    "pulse"
 };
 
 cmd_callback commands_fp[] = {
     CMD_adc,
-    CMD_logger
+    CMD_logger,
+    CMD_pulse
 };
 
 void CMD_parse(const char* str){
@@ -124,5 +126,31 @@ void CMD_logger(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     if(EQUAL_STRINGS(argv[0], "level")){
         if(argc < 1) return;
         log_setLevel(atoi(argv[1]));
+    }
+}
+
+
+/*
+    pulse upper 100 -> sets upper to 100 in uint16_t values
+*/
+void CMD_pulse(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
+    _log_smpl(debug0, "In command pulse");
+
+    if(argc == 0) return;
+
+    if(EQUAL_STRINGS(argv[0], "upper")){
+        if(argc < 1) return;
+        _log(debug1, "Setting %s to %d", argv[0], atoi(argv[1]));
+        handler.sp.pulse_param.upper = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "middle")){
+        if(argc < 1) return;
+        _log(debug1, "Setting %s to %d", argv[0], atoi(argv[1]));
+        handler.sp.pulse_param.middle = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "fall")){
+        if(argc < 1) return;
+        _log(debug1, "Setting %s to %d", argv[0], atoi(argv[1]));
+        handler.sp.pulse_param.fall = atoi(argv[1]);
     }
 }

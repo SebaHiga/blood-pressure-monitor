@@ -6,7 +6,7 @@ extern handler_t handler;
 void Task_ADC(void)
 {
 	delay(handler.adc.delay);
-	_log(debug5, "ADC flag: %d", handler.adc.start);
+	_log(debug9, "ADC flag: %d", handler.adc.start);
 
 	if(handler.adc.start){
         handler.adc.lowpass = ADC_read(ADC_CH0);
@@ -14,28 +14,31 @@ void Task_ADC(void)
 
         //low pass filtered
 		if(handler.adc.debug){
-			UART_printf("%d, %d, %d\r\n", handler.adc.highpass, handler.adc.lowpass, handler.adc.pressure);
+			// UART_printf("%d, %d, %d\r\n", handler.adc.highpass, handler.adc.lowpass, handler.adc.pressure);
+            UART_printf("%d, %d\r\n",handler.adc.highpass, handler.adc.pressure);
 		}
 	}
 }
 
-uint16_t ADC_read(enum CHIP_ADC_CHANNEL adc){
-	uint16_t val = 0;
+int ADC_read(enum CHIP_ADC_CHANNEL adc){
+	int val = 0;
 	uint16_t samples[ADC_VECT_TOTAL];
 	uint16_t accumulate = 0;
 
     uint8_t i = 0;
 
     switch(adc){
-    case ADC_CH0:
-	Chip_ADC_EnableChannel(LPC_ADC, adc, ENABLE);
-	Chip_ADC_EnableChannel(LPC_ADC, ADC_CH1, DISABLE);
-	break;
+		case ADC_CH0:{
+			Chip_ADC_EnableChannel(LPC_ADC, adc, ENABLE);
+			Chip_ADC_EnableChannel(LPC_ADC, ADC_CH1, DISABLE);
+		}break;
 
-    case ADC_CH1:
-    	Chip_ADC_EnableChannel(LPC_ADC, adc, ENABLE);
-    	Chip_ADC_EnableChannel(LPC_ADC, ADC_CH0, DISABLE);
-    	break;
+		case ADC_CH1:{
+			Chip_ADC_EnableChannel(LPC_ADC, adc, ENABLE);
+			Chip_ADC_EnableChannel(LPC_ADC, ADC_CH0, DISABLE);
+		}break;
+
+		default: return 0;
     }
 
     Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);
@@ -65,7 +68,7 @@ uint16_t ADC_read(enum CHIP_ADC_CHANNEL adc){
     
     switch(adc){
         case ADC_CH0:{
-            val = iirFilterLP(val);
+//            val = iirFilterLP(val);
         }break;
 
         case ADC_CH1:{

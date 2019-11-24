@@ -31,5 +31,6 @@ void CMD_parse(const char*);
 
 void CMD_adc(int, char[CMD_MAX_ARGS][CMD_STRLEN_ARGS]);
 void CMD_logger(int, char[CMD_MAX_ARGS][CMD_STRLEN_ARGS]);
+void CMD_pulse(int, char[CMD_MAX_ARGS][CMD_STRLEN_ARGS]);
 
 #endif /* LIB_CMD_CMD_H_ */
