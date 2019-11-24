@@ -15,7 +15,6 @@ void Task_SignalProcess(void){
 
         case idle:{
             if(handler.sp.debug){
-                _log_smpl(debug1, "In idle state");
             }
         }break;
 
@@ -32,3 +31,8 @@ void Task_SignalProcess(void){
         }
     }
 }
+
+float Convert2mmHg (uint16_t value){
+  return ((value* 0.0065975421819632896) + 12.737942826257036);
+}
+

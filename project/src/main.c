@@ -19,7 +19,7 @@ int main(void) {
 
 	//Default parameters
 	handler.adc.start = 0;
-	handler.adc.delay = 1000;
+	handler.adc.delay = 2;
 	handler.adc.pressure = 0;
 	handler.adc.debug = 0;
 	handler.adc.new_val = 0;

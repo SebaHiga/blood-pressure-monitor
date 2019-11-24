@@ -17,4 +17,7 @@ typedef struct{
     int debug;
 } sp_handler_t;
 
+float Convert2mmHg (uint16_t value);
+void Task_SignalProcess(void);
+
 #endif
