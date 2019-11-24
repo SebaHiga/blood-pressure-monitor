@@ -66,25 +66,16 @@ uint16_t ADC_read(enum CHIP_ADC_CHANNEL adc){
     switch(adc){
         case ADC_CH0:{
             val = iirFilterLP(val);
-            if(handler.sp.offset){
-                handler.adc.new_val = 1;
-                return val - handler.sp.offset;
-            }
-            else{
-                handler.adc.new_val = 1;
-                return val;	
-            }
         }break;
 
         case ADC_CH1:{
             val = iirFilterHP(val);
-            handler.adc.new_val = 1;
-            return val;
         }break;
         
         default:
             return 0;
     }
 
-    return 0;
+    handler.adc.new_val = 1;
+    return val;	
 }

@@ -5,8 +5,7 @@
 
 struct sp_status_t{
     enum sig_process_status_t{
-        offset = 0,
-        idle,
+        idle = 0,
         measuring,
         end
     } Type;

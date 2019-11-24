@@ -5,14 +5,6 @@ extern handler_t handler;
 
 void Task_SignalProcess(void){
     switch (handler.sp.status){
-        case offset:{
-            if(handler.adc.new_val){
-                _log_smpl(info, "Offset is set");
-                handler.sp.offset = handler.adc.lowpass;
-                handler.sp.status = idle;
-            }
-        }break;
-
         case idle:{
             if(handler.sp.debug){
             }
