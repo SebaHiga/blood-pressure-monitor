@@ -7,7 +7,15 @@ static const char *_level_str[] = {
 		"[ERRO]",
 		"[INFO]",
 		"[DEB0]",
-		"[DEB1]"
+		"[DEB1]",
+		"[DEB2]",
+		"[DEB3]",
+		"[DEB4]",
+		"[DEB5]",
+		"[DEB6]",
+		"[DEB7]",
+		"[DEB8]",
+		"[DEB9]"
 };
 
 void log_setLevel(int level){

@@ -11,12 +11,14 @@ extern handler_t handler;
 
 static const char *commands_str[] = {
     "adc",
-    "logger"
+    "logger",
+    "pulse"
 };
 
 cmd_callback commands_fp[] = {
     CMD_adc,
-    CMD_logger
+    CMD_logger,
+    CMD_pulse
 };
 
 void CMD_parse(const char* str){
@@ -28,7 +30,7 @@ void CMD_parse(const char* str){
 
     strcpy(tmp, str);
 
-    log_printf(__func__, debug0, "Received command: %s", tmp);
+    _log(debug0, "Received command: %s", tmp);
 
     for (uint8_t i = 0; i < len; i++)   //replace al spaces with null
     {
@@ -44,11 +46,11 @@ void CMD_parse(const char* str){
             argc++;
             i += strlen(tmp + i);
 
-            log_printf(__func__, debug0, "Parsed argument %d: %s", argc, argv[argc - 1]);
+            _log(debug0, "Parsed argument %d: %s", argc, argv[argc - 1]);
         }
     }
 
-    int amount_commands = VECT_SIZE(commands_str);
+    int amount_commands = N_ELEMENTS(commands_str);
     
     for (int i = 0; i < amount_commands; i++)
     {
@@ -64,37 +66,52 @@ void CMD_parse(const char* str){
     adc delay 1000 -> sets adc's delay to 1000ms
 */
 void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
-    log_printf(__func__, debug0, "In command adc");
+    _log_smpl(debug0, "In command adc");
 
     if(argc == 0) return;
 
     if(EQUAL_STRINGS(argv[0], "start")){
-        Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
-        handler.adc_start = 1;
+        handler.adc.start = 1;
         Chip_GPIO_SetPinOutHigh(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
     }
     else if(EQUAL_STRINGS(argv[0], "stop")){
-        handler.adc_start = 0;
+        handler.adc.start = 0;
         Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
     }
     else if(EQUAL_STRINGS(argv[0], "delay")){
         if(argc < 1){
-            log_printf(__func__, error, "No value for delay\n");
+            _log_smpl(error, "No value for delay\n");
             return;
         }
 
-        handler.adc_delay = atoi(argv[1]);
+        //error prone
+        handler.adc.delay = atoi(argv[1]);
     }
+    else if(EQUAL_STRINGS(argv[0], "debug")){
+        if(argc < 1){
+            _log_smpl(error, "No value for delay\n");
+            return;
+        }
+
+        if(EQUAL_STRINGS(argv[1], "on")){
+            handler.adc.debug = 1;
+        }
+        else{
+            handler.adc.debug = 0;
+        }
+    }
+
     else if(EQUAL_STRINGS(argv[0], "pressure")){
         if(argc < 1){
-            log_printf(__func__, error, "No value for pressure\n");
+            _log_smpl(error, "No value for pressure\n");
             return;
         }
 
-        handler.adc_pressure = atoi(argv[1]);
+        //error prone
+        handler.adc.pressure = atoi(argv[1]);
     }
     else{
-        log_printf(__func__, error, "Error in argument %s\n", argv[0]);
+        _log(error, "Error in argument %s\n", argv[0]);
     }
 }
 
@@ -102,12 +119,48 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     logger level 1 -> sets logger's level to 1 (error)
 */
 void CMD_logger(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
-    log_printf(__func__, debug0, "In command logger");
+    _log_smpl(debug0, "In command logger");
 
     if(argc == 0) return;
 
     if(EQUAL_STRINGS(argv[0], "level")){
         if(argc < 1) return;
         log_setLevel(atoi(argv[1]));
+    }
+}
+
+
+/*
+    pulse upper 100 -> sets upper to 100 in uint16_t values
+*/
+void CMD_pulse(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
+    _log_smpl(debug0, "In command pulse");
+
+    if(argc == 0) return;
+
+    if(EQUAL_STRINGS(argv[0], "upper")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.upper = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "middle")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.middle = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "fall")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.fall = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "height")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.max_height = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "lenght")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.min_lenght = atoi(argv[1]);
+    }
+
+    
+    if(argc > 1){
+        _log(debug1, "Setting %s to %d", argv[0], atoi(argv[1]));
     }
 }

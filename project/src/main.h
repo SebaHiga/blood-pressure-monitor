@@ -1,15 +1,32 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
+
+#include "chip.h"
+#include "string.h"
+#include "board.h"
+#include "uart.h"
+#include "logger.h"
+#include <stdio.h>
+#include <stdarg.h>
+#include "main.h"
+#include "cmd.h"
+#include "utils.h"
+#include "filter.h"
+#include "lcd.h"
+
+#include <cr_section_macros.h>
+
+#include "tasks.h"
+
 typedef struct{
-	int adc_start;
-	int adc_delay;
-    int adc_pressure;
+	adc_handler_t adc;
+	sp_handler_t sp;
 }handler_t;
 
 #define delay(ticks)			\
 {								\
-	static int _count = 0;	\
+	static int _count = 0;		\
 	if(_count){					\
 		_count--;				\
 		return;					\
@@ -32,8 +49,9 @@ typedef struct{
 #define LED_VERDE_PORT	(2)
 #define LED_VERDE_PIN	(12)
 
-/*ADC*/
-#define ADC0_PORT		(0)
-#define ADC0_PIN		(23)
+
+void InitHardware(void);
+
+void TareaLeeSerie(void);
 
 #endif

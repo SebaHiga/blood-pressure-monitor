@@ -8,84 +8,45 @@
 ===============================================================================
 */
 
-#if defined (__USE_LPCOPEN)
-#if defined(NO_BOARD_LIB)
-#include "chip.h"
-#include "string.h"
-#include "board.h"
-#include "uart.h"
-#include "logger.h"
-#include <stdio.h>
-#include <stdarg.h>
 #include "main.h"
-#include "cmd.h"
-#else
-#include "board.h"
-#endif
-#endif
-
-#include <cr_section_macros.h>
-
-
 
 handler_t handler;
 
-void InitHardware(void);
-//void TareaTickLed(void);
-void TareaADC(void);
-void TareaLeeSerie(void);
-
 int main(void) {
-
-#if defined (__USE_LPCOPEN)
-    // Read clock settings and update SystemCoreClock variable
-    SystemCoreClockUpdate();
-#if !defined(NO_BOARD_LIB)
-    // Set up and initialize all required blocks and
-    // functions related to the board hardware
-    Board_Init();
-    // Set the LED to the state of "On"
-    Board_LED_Set(0, true);
-#endif
-#endif
     InitHardware();
 
     log_setLevel(debug0);
 
 	//Default parameters
-	handler.adc_start = 0;
-	handler.adc_delay = 1000;
-	handler.adc_pressure = 0;
+	handler.adc.start = 0;
+	handler.adc.delay = 2;
+	handler.adc.pressure = 0;
+	handler.adc.debug = 0;
+	handler.adc.new_val = 0;
+
+	//signal process
+	handler.sp.status = 0;
+	handler.sp.offset = 0;
+	handler.sp.status = measuring;
+
+	//pulse
+	handler.sp.pulse_param.upper = UPPER_VAL;
+	handler.sp.pulse_param.middle = MIDDLE_VAL;
+	handler.sp.pulse_param.fall = FALL_VAL;
+	handler.sp.pulse_param.min_lenght = MIN_LENGHT;
+	handler.sp.pulse_param.max_height = MAX_HEIGHT;
+
+	LCD_printf(0, "Hola mundo!");
 
     while(1) {
-	    TareaADC();
     	TareaLeeSerie();
-
+	    Task_ADC();
+		Task_SignalProcess();
+		
    		__WFI();
     }
     return 0 ;
 }
-
-
-
-void TareaADC(void)
-{
-	uint16_t val=0;
-
-	delay(handler.adc_delay);
-	log_printf(__func__, debug1, "ADC flag: %d", handler.adc_start);
-
-	if(handler.adc_start)
-	{
-			if(Chip_ADC_ReadStatus(LPC_ADC,ADC_CH5,ADC_DR_DONE_STAT)){
-				Chip_ADC_ReadValue(LPC_ADC,ADC_CH5, &val);
-
-				UART_printf("%d %d\r\n", handler.adc_pressure, val);
-				Chip_ADC_SetStartMode(LPC_ADC,ADC_START_NOW,ADC_TRIGGERMODE_RISING);
-			}
-	}
-}
-
 
 void TareaLeeSerie(void)
 {
@@ -112,7 +73,7 @@ void TareaLeeSerie(void)
 			if(byte == '\n'){
 				str[index] = '\0';
 
-				log_printf(__func__, debug1, "UART: %s\n", str);
+				_log(debug3, "UART: %s\n", str);
 
 				CMD_parse(str);
 
@@ -163,19 +124,12 @@ void InitHardware(void)
 	Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
 	
 	// ADC_CLOCK_SETUP_T adc_setup;
-	// uint16_t dummy;
-	// Chip_IOCON_PinMuxSet(LPC_IOCON,ADC0_PORT,ADC0_PIN,IOCON_FUNC1);
-	// Chip_ADC_Init(LPC_ADC,&adc_setup);
-	// Chip_ADC_EnableChannel(LPC_ADC,ADC_CH0,ENABLE);
-	// Chip_ADC_ReadValue(LPC_ADC,ADC_CH0,&dummy);
-
-	// Inicializo el ADC5
 	ADC_CLOCK_SETUP_T adc_setup;
-	uint16_t dummy;
-	Chip_IOCON_PinMuxSet(LPC_IOCON,1,31,IOCON_FUNC3);
-	Chip_ADC_Init(LPC_ADC, &adc_setup);
-	Chip_ADC_EnableChannel(LPC_ADC,ADC_CH5,ENABLE);
-	Chip_ADC_ReadValue(LPC_ADC,ADC_CH5,&dummy);
+	Chip_IOCON_PinMuxSet(LPC_IOCON,ADC0_PORT,ADC0_PIN,IOCON_FUNC1);
+	Chip_IOCON_PinMuxSet(LPC_IOCON, ADC1_PORT, ADC1_PIN, IOCON_FUNC1);
+	Chip_ADC_Init(LPC_ADC,&adc_setup);
+
+	LCD_init();
 }
 
 
