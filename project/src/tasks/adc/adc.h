@@ -11,7 +11,7 @@ typedef struct{
 	int debug;
 	int new_val;
 
-	uint16_t highpass;
+	int highpass;
 	uint16_t lowpass;
 }adc_handler_t;
 
@@ -26,6 +26,6 @@ typedef struct{
 #define ADC_VECT_NOTAKE	3
 
 void Task_ADC(void);
-uint16_t ADC_read(enum CHIP_ADC_CHANNEL adc);
+int ADC_read(enum CHIP_ADC_CHANNEL adc);
 
 #endif
