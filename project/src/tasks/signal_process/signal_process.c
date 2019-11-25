@@ -79,6 +79,7 @@ void processPulse(int val){
                 if(height < handler.sp.pulse_param.max_height 
                     && len > handler.sp.pulse_param.min_lenght){
 
+                    LCD_InstantPressure(handler.adc.lowpass);
                     _log(info, "Pulse height is: %d", height);
                 }
 

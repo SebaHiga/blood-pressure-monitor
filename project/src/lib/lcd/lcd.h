@@ -26,7 +26,7 @@
 #define LCD_N_CHARACTERS            16
 
 typedef enum{
-    row1,
+    row1 = 0,
     row2
 }lcd_row_t;
 
@@ -38,7 +38,9 @@ void LCD_WComando4(uint8_t comando);
 void LCD_WComando8(uint8_t comando);
 void LCD_WDato(uint8_t comando);
 void LCD_WString (uint8_t *ptr);
-void LCD_printf(int row, const char *format, ...);
+
+void LCD_printf(lcd_row_t row, const char *format, ...);
+void LCD_diffPrint(lcd_row_t row, const char *str);
 
 void Display_lcd( char *msg , char r , char p );
 void LCD_InstantPressure (int value);

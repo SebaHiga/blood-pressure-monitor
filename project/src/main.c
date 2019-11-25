@@ -36,7 +36,7 @@ int main(void) {
 	handler.sp.pulse_param.min_lenght = MIN_LENGHT;
 	handler.sp.pulse_param.max_height = MAX_HEIGHT;
 
-	LCD_printf(0, "Pressure");
+	LCD_printf(row1, "Pressure");
 
     while(1) {
     	TareaLeeSerie();

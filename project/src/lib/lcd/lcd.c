@@ -84,7 +84,7 @@ void LCD_latch(void){
 
 	Chip_GPIO_SetPinOutHigh(LPC_GPIO,LCD_E_PORT,LCD_E_PIN);
 	//LCDDelay(2);
-	LCD_WaitLong(1);
+	LCD_WaitLong(5);
 	for(i = 0; i < 120; i++);
 	Chip_GPIO_SetPinOutLow(LPC_GPIO,LCD_E_PORT,LCD_E_PIN);
 }
@@ -177,19 +177,30 @@ void LCD_InstantPressure (int value){
  * 
  */
 void LCD_diffPrint(lcd_row_t row, const char *str){
-    static msg_previous[2][LCD_N_CHARACTERS] = {0};
+    static char msg_previous[2][LCD_N_CHARACTERS] = {0};
     char msg[LCD_N_CHARACTERS];
+    int position = 0;
 
     if(strlen(str) > 16) return;
 
     memset(msg, 0, LCD_N_CHARACTERS);
     strcpy(msg, str);
 
+    switch (row){
+        case row1:
+            position = 0x80;
+            break;
+        case row2:
+            position = 0xc0;
+            break;
+    }
+
     //check for differences
     for (int i = 0; i < LCD_N_CHARACTERS; i++)
     {
         if(msg_previous[row][i] != msg[i]){
-            LCD_WComando8(i + 0xc0);
+
+            LCD_WComando8(i + position);
             LCD_WDato( (uint8_t) msg[i]);
         }
     }
@@ -197,7 +208,12 @@ void LCD_diffPrint(lcd_row_t row, const char *str){
     strcpy(msg_previous[row], msg);
 }
 
-void LCD_printf(int row, const char *format, ...){
+/*
+
+    Be careful to NOT surpass 16 characters
+
+*/
+void LCD_printf(lcd_row_t row, const char *format, ...){
     char str[125] = {0};
     va_list args;
 
@@ -205,7 +221,7 @@ void LCD_printf(int row, const char *format, ...){
     vsprintf(str, format, args);
     va_end(args);
 
-    if(strlen(str) < 12){
-        Display_lcd(str, row, 0);
+    if(strlen(str) < LCD_N_CHARACTERS){
+        LCD_diffPrint(row, str);
     }
 }
