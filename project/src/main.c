@@ -36,6 +36,8 @@ int main(void) {
 	handler.sp.pulse_param.min_lenght = MIN_LENGHT;
 	handler.sp.pulse_param.max_height = MAX_HEIGHT;
 
+	LCD_printf(0, "Hola mundo!");
+
     while(1) {
     	TareaLeeSerie();
 	    Task_ADC();
@@ -126,6 +128,8 @@ void InitHardware(void)
 	Chip_IOCON_PinMuxSet(LPC_IOCON,ADC0_PORT,ADC0_PIN,IOCON_FUNC1);
 	Chip_IOCON_PinMuxSet(LPC_IOCON, ADC1_PORT, ADC1_PIN, IOCON_FUNC1);
 	Chip_ADC_Init(LPC_ADC,&adc_setup);
+
+	LCD_init();
 }
 
 

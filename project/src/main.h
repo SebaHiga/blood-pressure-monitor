@@ -13,6 +13,7 @@
 #include "cmd.h"
 #include "utils.h"
 #include "filter.h"
+#include "lcd.h"
 
 #include <cr_section_macros.h>
 
