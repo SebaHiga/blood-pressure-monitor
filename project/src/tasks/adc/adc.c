@@ -49,7 +49,7 @@ int ADC_read(enum CHIP_ADC_CHANNEL adc){
     //read till buffer is full
     while(i < ADC_VECT_TOTAL){
         if(Chip_ADC_ReadStatus(LPC_ADC, adc, ADC_DR_DONE_STAT)){
-            Chip_ADC_ReadValue(LPC_ADC, adc, &val);
+            Chip_ADC_ReadValue(LPC_ADC, adc,(uint16_t*) &val);
 
             samples[i] = val;
 

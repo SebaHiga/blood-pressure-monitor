@@ -23,8 +23,12 @@
 
 #define	LCD_CLEAR   			0x01
 
-#define	RENGLON_1   			0
-#define	RENGLON_2   			1
+#define LCD_N_CHARACTERS            16
+
+typedef enum{
+    row1,
+    row2
+}lcd_row_t;
 
 void LCD_init (void);
 void LCD_WaitLong(uint16_t ciclos);

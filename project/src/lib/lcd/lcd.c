@@ -84,7 +84,7 @@ void LCD_latch(void){
 
 	Chip_GPIO_SetPinOutHigh(LPC_GPIO,LCD_E_PORT,LCD_E_PIN);
 	//LCDDelay(2);
-	LCD_WaitLong(15);
+	LCD_WaitLong(1);
 	for(i = 0; i < 120; i++);
 	Chip_GPIO_SetPinOutLow(LPC_GPIO,LCD_E_PORT,LCD_E_PIN);
 }
@@ -148,22 +148,53 @@ void Display_lcd( char *msg , char r , char p ){
     LCD_WString( (uint8_t *) msg);
 }
 
+
+/**
+ * 
+ *  |  0 mmHg  -> corrido 4-len posiciones 
+ *  | 10 mmHg
+ *  |100 mmHg
+ */
 void LCD_InstantPressure (int value){
-    static char msg_ant[] = "aaaa";
+    char num[LCD_N_CHARACTERS];
+    char msg[LCD_N_CHARACTERS];
 
-    char msg[5];
+    sprintf(num, "%d", value);
 
-    sprintf(msg, "%d", value);
+    //set message with NULL then set spaces to offset the number
+    memset(msg, 0, LCD_N_CHARACTERS);
+    memset(msg, ' ', 4 - strlen(num));
 
-    for(int i=0; i<4; i++)
+    //concatenate all to message
+    strcat(msg, num);
+    strcat(msg, " mmHg");
+
+    LCD_diffPrint(row2, msg);
+}
+
+/**
+ *  This functions only prints for different characters in given string 
+ * 
+ */
+void LCD_diffPrint(lcd_row_t row, const char *str){
+    static msg_previous[2][LCD_N_CHARACTERS] = {0};
+    char msg[LCD_N_CHARACTERS];
+
+    if(strlen(str) > 16) return;
+
+    memset(msg, 0, LCD_N_CHARACTERS);
+    strcpy(msg, str);
+
+    //check for differences
+    for (int i = 0; i < LCD_N_CHARACTERS; i++)
     {
-        if(msg_ant[i] != msg[i])
-        {
-            LCD_WComando8(i+0xc0);
+        if(msg_previous[row][i] != msg[i]){
+            LCD_WComando8(i + 0xc0);
             LCD_WDato( (uint8_t) msg[i]);
-            msg_ant[i] = msg[i];
         }
     }
+    
+    strcpy(msg_previous[row], msg);
 }
 
 void LCD_printf(int row, const char *format, ...){
