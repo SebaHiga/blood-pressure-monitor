@@ -1,5 +1,6 @@
 #include "adc.h"
 #include "main.h"
+#include "lcd.h"
 
 extern handler_t handler;
 
@@ -12,6 +13,8 @@ void Task_ADC(void)
         handler.adc.lowpass = ADC_read(ADC_CH0);
         handler.adc.highpass = ADC_read(ADC_CH1);
 
+
+        LCD_InstantPressure(handler.adc.lowpass);
         //low pass filtered
 		if(handler.adc.debug){
 			UART_printf("%d, %d, %d\r\n", handler.adc.highpass, handler.adc.lowpass, handler.adc.pressure);
