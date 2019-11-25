@@ -165,3 +165,16 @@ void LCD_InstantPressure (int value){
         }
     }
 }
+
+void LCD_printf(int row, const char *format, ...){
+    char str[125] = {0};
+    va_list args;
+
+    va_start(args, format);
+    vsprintf(str, format, args);
+    va_end(args);
+
+    if(strlen(str) < 12){
+        Display_lcd(str, row, 0);
+    }
+}

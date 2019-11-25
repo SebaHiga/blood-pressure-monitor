@@ -2,7 +2,9 @@
 #define __LCD_H__
 
 #include "chip.h"
+#include "string.h"
 #include <stdio.h>
+#include <stdarg.h>
 #include <stdlib.h>
 
 /*PINES LCD*/
@@ -32,6 +34,7 @@ void LCD_WComando4(uint8_t comando);
 void LCD_WComando8(uint8_t comando);
 void LCD_WDato(uint8_t comando);
 void LCD_WString (uint8_t *ptr);
+void LCD_printf(int row, const char *format, ...);
 
 void Display_lcd( char *msg , char r , char p );
 void LCD_InstantPressure (int value);

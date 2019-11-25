@@ -27,6 +27,8 @@ int main(void) {
 	handler.sp.status = 0;
 	handler.sp.offset = 0;
 
+	LCD_printf(0, "Hola mundo!");
+
     while(1) {
     	TareaLeeSerie();
 	    Task_ADC();
