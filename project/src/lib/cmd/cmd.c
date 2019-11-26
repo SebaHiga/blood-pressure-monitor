@@ -89,7 +89,7 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     }
     else if(EQUAL_STRINGS(argv[0], "debug")){
         if(argc < 1){
-            _log_smpl(error, "No value for delay\n");
+            _log_smpl(error, "Please use on/off as arguments");
             return;
         }
 
@@ -158,8 +158,15 @@ void CMD_pulse(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
         if(argc < 1) return;
         handler.sp.pulse_param.min_lenght = atoi(argv[1]);
     }
+    else if(EQUAL_STRINGS(argv[0], "map2dia")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.map2dia = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "map2sys")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.map2sys = atoi(argv[1]);
+    }
 
-    
     if(argc > 1){
         _log(debug1, "Setting %s to %d", argv[0], atoi(argv[1]));
     }

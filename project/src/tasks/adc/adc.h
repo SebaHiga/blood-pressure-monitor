@@ -24,6 +24,7 @@ typedef struct{
 
 #define	ADC_VECT_TOTAL	12
 #define ADC_VECT_NOTAKE	3
+#define	ADC_FREQ_500Hz	2
 
 void Task_ADC(void);
 int ADC_read(enum CHIP_ADC_CHANNEL adc);

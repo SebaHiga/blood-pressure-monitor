@@ -84,7 +84,7 @@ void LCD_latch(void){
 
 	Chip_GPIO_SetPinOutHigh(LPC_GPIO,LCD_E_PORT,LCD_E_PIN);
 	//LCDDelay(2);
-	LCD_WaitLong(15);
+	LCD_WaitLong(5);
 	for(i = 0; i < 120; i++);
 	Chip_GPIO_SetPinOutLow(LPC_GPIO,LCD_E_PORT,LCD_E_PIN);
 }
@@ -148,25 +148,72 @@ void Display_lcd( char *msg , char r , char p ){
     LCD_WString( (uint8_t *) msg);
 }
 
+
+/**
+ * 
+ *  |  0 mmHg  -> corrido 4-len posiciones 
+ *  | 10 mmHg
+ *  |100 mmHg
+ */
 void LCD_InstantPressure (int value){
-    static char msg_ant[] = "aaaa";
+    char num[LCD_N_CHARACTERS];
+    char msg[LCD_N_CHARACTERS];
 
-    char msg[5];
+    sprintf(num, "%d", value);
 
-    sprintf(msg, "%d", value);
+    //set message with NULL then set spaces to offset the number
+    memset(msg, 0, LCD_N_CHARACTERS);
+    memset(msg, ' ', 4 - strlen(num));
 
-    for(int i=0; i<4; i++)
-    {
-        if(msg_ant[i] != msg[i])
-        {
-            LCD_WComando8(i+0xc0);
-            LCD_WDato( (uint8_t) msg[i]);
-            msg_ant[i] = msg[i];
-        }
-    }
+    //concatenate all to message
+    strcat(msg, num);
+    strcat(msg, " mmHg");
+
+    LCD_diffPrint(row2, msg);
 }
 
-void LCD_printf(int row, const char *format, ...){
+/**
+ *  This functions only prints for different characters in given string 
+ * 
+ */
+void LCD_diffPrint(lcd_row_t row, const char *str){
+    static char msg_previous[2][LCD_N_CHARACTERS] = {0};
+    char msg[LCD_N_CHARACTERS];
+    int position = 0;
+
+    if(strlen(str) > 16) return;
+
+    memset(msg, 0, LCD_N_CHARACTERS);
+    strcpy(msg, str);
+
+    switch (row){
+        case row1:
+            position = 0x80;
+            break;
+        case row2:
+            position = 0xc0;
+            break;
+    }
+
+    //check for differences
+    for (int i = 0; i < LCD_N_CHARACTERS; i++)
+    {
+        if(msg_previous[row][i] != msg[i]){
+
+            LCD_WComando8(i + position);
+            LCD_WDato( (uint8_t) msg[i]);
+        }
+    }
+    
+    strcpy(msg_previous[row], msg);
+}
+
+/*
+
+    Be careful to NOT surpass 16 characters
+
+*/
+void LCD_printf(lcd_row_t row, const char *format, ...){
     char str[125] = {0};
     va_list args;
 
@@ -174,7 +221,7 @@ void LCD_printf(int row, const char *format, ...){
     vsprintf(str, format, args);
     va_end(args);
 
-    if(strlen(str) < 12){
-        Display_lcd(str, row, 0);
+    if(strlen(str) < LCD_N_CHARACTERS){
+        LCD_diffPrint(row, str);
     }
 }

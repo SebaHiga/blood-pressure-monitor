@@ -18,8 +18,8 @@ int main(void) {
     log_setLevel(debug0);
 
 	//Default parameters
-	handler.adc.start = 0;
-	handler.adc.delay = 2;
+	handler.adc.start = 1;
+	handler.adc.delay = ADC_FREQ_500Hz;
 	handler.adc.pressure = 0;
 	handler.adc.debug = 0;
 	handler.adc.new_val = 0;
@@ -35,8 +35,11 @@ int main(void) {
 	handler.sp.pulse_param.fall = FALL_VAL;
 	handler.sp.pulse_param.min_lenght = MIN_LENGHT;
 	handler.sp.pulse_param.max_height = MAX_HEIGHT;
+	
+	handler.sp.pulse_param.map2sys = MAP_2_SYS_RATIO;
+	handler.sp.pulse_param.map2dia = MAP_2_DIA_RATIO;
 
-	LCD_printf(0, "Hola mundo!");
+	LCD_printf(row1, "Pressure");
 
     while(1) {
     	TareaLeeSerie();
