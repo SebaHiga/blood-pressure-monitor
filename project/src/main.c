@@ -35,6 +35,9 @@ int main(void) {
 	handler.sp.pulse_param.fall = FALL_VAL;
 	handler.sp.pulse_param.min_lenght = MIN_LENGHT;
 	handler.sp.pulse_param.max_height = MAX_HEIGHT;
+	
+	handler.sp.pulse_param.map2sys = MAP_2_SYS_RATIO;
+	handler.sp.pulse_param.map2dia = MAP_2_DIA_RATIO;
 
 	LCD_printf(row1, "Pressure");
 

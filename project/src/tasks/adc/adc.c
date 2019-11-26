@@ -16,7 +16,7 @@ void Task_ADC(void)
         //low pass filtered
 		if(handler.adc.debug){
 			// UART_printf("%d, %d, %d\r\n", handler.adc.highpass, handler.adc.lowpass, handler.adc.pressure);
-            UART_printf("%d, %d\r\n",handler.adc.highpass, handler.adc.pressure);
+            UART_printf("%d, %d\r\n",handler.adc.lowpass, handler.adc.pressure);
 		}
 	}
 }
