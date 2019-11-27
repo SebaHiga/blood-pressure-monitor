@@ -132,6 +132,11 @@ void CMD_logger(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
 
 /*
     pulse upper 100 -> sets upper to 100 in uint16_t values
+    other possible parameters
+        -middle
+        -fall
+        -height
+        -lenght
 */
 void CMD_pulse(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     _log_smpl(debug0, "In command pulse");

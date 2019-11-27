@@ -23,7 +23,7 @@
 //cantidad de strings en array de strings
 #define N_ELEMENTS(vect) sizeof(vect) / sizeof(vect[0])
 //si son iguales manda un 1
-#define EQUAL_STRINGS(str1, str2) strcmp(str1, str2) == 0
+#define EQUAL_STRINGS(str1, str2) strstr(str1, str2) != NULL
 
 typedef void (*cmd_callback) (int, char[CMD_MAX_ARGS][CMD_STRLEN_ARGS]);
 
