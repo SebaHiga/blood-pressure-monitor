@@ -32,8 +32,8 @@ void Task_SignalProcess(void){
                 int systolic = Convert2mmHg(handler.sp.sys);
                 int diastolic = Convert2mmHg(handler.sp.dia);
 
-                LCD_printf(row1, "SYS: %d", Convert2mmHg(systolic));
-                LCD_printf(row2, "DIA: %d", Convert2mmHg(diastolic));
+                LCD_printf(row1, "SYS: %d", systolic);
+                LCD_printf(row2, "DIA: %d", diastolic);
 
                 _log(info, "Systolic pressure:\t%d", systolic);
                 _log(info, "Diastolic pressure:\t%d", diastolic);
