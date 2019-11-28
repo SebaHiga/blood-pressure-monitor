@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "chip.h"
 
+
 void bubbleSort(uint16_t * samples, uint8_t total);
 
 #endif
