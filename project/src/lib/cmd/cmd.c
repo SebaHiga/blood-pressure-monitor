@@ -12,13 +12,15 @@ extern handler_t handler;
 static const char *commands_str[] = {
     "adc",
     "logger",
-    "pulse"
+    "pulse",
+    "lcd"
 };
 
 cmd_callback commands_fp[] = {
     CMD_adc,
     CMD_logger,
-    CMD_pulse
+    CMD_pulse,
+    CMD_lcd
 };
 
 void CMD_parse(const char* str){
@@ -46,7 +48,7 @@ void CMD_parse(const char* str){
             argc++;
             i += strlen(tmp + i);
 
-            _log(debug0, "Parsed argument %d: %s", argc, argv[argc - 1]);
+            _log(debug1, "Parsed argument %d: %s", argc, argv[argc - 1]);
         }
     }
 
@@ -89,7 +91,7 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     }
     else if(EQUAL_STRINGS(argv[0], "debug")){
         if(argc < 1){
-            _log_smpl(error, "No value for delay\n");
+            _log_smpl(error, "Please use on/off as arguments");
             return;
         }
 
@@ -132,6 +134,11 @@ void CMD_logger(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
 
 /*
     pulse upper 100 -> sets upper to 100 in uint16_t values
+    other possible parameters
+        -middle
+        -fall
+        -height
+        -lenght
 */
 void CMD_pulse(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     _log_smpl(debug0, "In command pulse");
@@ -158,9 +165,39 @@ void CMD_pulse(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
         if(argc < 1) return;
         handler.sp.pulse_param.min_lenght = atoi(argv[1]);
     }
+    else if(EQUAL_STRINGS(argv[0], "map2dia")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.map2dia = atoi(argv[1]);
+    }
+    else if(EQUAL_STRINGS(argv[0], "map2sys")){
+        if(argc < 1) return;
+        handler.sp.pulse_param.map2sys = atoi(argv[1]);
+    }
 
-    
     if(argc > 1){
         _log(debug1, "Setting %s to %d", argv[0], atoi(argv[1]));
+    }
+}
+
+/*
+
+    lcd print 1 hola mundo -> en la fila uno escribe "hola mundo"
+
+*/
+void CMD_lcd(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
+    _log_smpl(debug0, "In command lcd");
+
+    if(argc == 0) return;
+
+    if(EQUAL_STRINGS(argv[0], "print")){
+        if(argc < 3) return;
+
+        int row;
+
+        row = atoi(argv[1]) - 1;
+
+        LCD_printf(row, "%s", argv[2]);
+
+        _log(debug1, "Printing in lcd row%d: %s", row, argv[2]);
     }
 }

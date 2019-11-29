@@ -13,12 +13,10 @@ void Task_ADC(void)
         handler.adc.lowpass = ADC_read(ADC_CH0);
         handler.adc.highpass = ADC_read(ADC_CH1);
 
-
-        LCD_InstantPressure(handler.adc.lowpass);
         //low pass filtered
 		if(handler.adc.debug){
 			// UART_printf("%d, %d, %d\r\n", handler.adc.highpass, handler.adc.lowpass, handler.adc.pressure);
-            UART_printf("%d, %d\r\n",handler.adc.highpass, handler.adc.pressure);
+            UART_printf("%d, %d\r\n",handler.adc.lowpass, handler.adc.pressure);
 		}
 	}
 }
@@ -49,7 +47,7 @@ int ADC_read(enum CHIP_ADC_CHANNEL adc){
     //read till buffer is full
     while(i < ADC_VECT_TOTAL){
         if(Chip_ADC_ReadStatus(LPC_ADC, adc, ADC_DR_DONE_STAT)){
-            Chip_ADC_ReadValue(LPC_ADC, adc, &val);
+            Chip_ADC_ReadValue(LPC_ADC, adc,(uint16_t*) &val);
 
             samples[i] = val;
 
