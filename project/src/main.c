@@ -41,7 +41,7 @@ int main(void) {
 
 	handler.display.delay = DISPLAY_DELAY;
 
-	LCD_printf(row1, "Ready:");
+	LCD_printf(row1, "Ready");
 
     while(1) {
     	TareaLeeSerie();

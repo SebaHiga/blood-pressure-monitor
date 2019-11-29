@@ -138,7 +138,6 @@ void processPulse(int val){
         case rising:{
             //comienza a crecer
             if(val > handler.sp.pulse_param.upper){
-                _log_smpl(debug3, "Going to middle state");
                 max = 0;
                 min = MAX_VAL;
                 state = middle;
@@ -155,7 +154,6 @@ void processPulse(int val){
             }
 
             if(val < handler.sp.pulse_param.middle){
-                _log(debug1, "Middle value reached, maximum peak is %d", max);
                 state = falling;
             }
         }break;
@@ -169,7 +167,6 @@ void processPulse(int val){
             }
 
             if(val > handler.sp.pulse_param.fall){
-                _log(debug1, "Fall value reached, minimum peak is %d", min);
 
                 int height = max - min;
 
@@ -181,7 +178,8 @@ void processPulse(int val){
 
                     //save into vect
                     if (pulse_record.index < HEIGHT_LEN_VECT){
-                        _log(info, "Pulse %d height is: %d", pulse_record.index, height);
+                        _log(info, "Pulse %d \tHeight %d\tLenght: %d", pulse_record.index, height, len);
+                        _log(debug4, "Max %d\tMin%d", max, min);
 
                         pulse_record.height[pulse_record.index] = height;
                         pulse_record.pressure[pulse_record.index] = handler.adc.lowpass;
