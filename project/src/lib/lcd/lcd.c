@@ -80,12 +80,9 @@ void LCD_WaitShort(uint8_t ciclos){
 	}
 }
 void LCD_latch(void){
-    uint16_t i;
-
 	Chip_GPIO_SetPinOutHigh(LPC_GPIO,LCD_E_PORT,LCD_E_PIN);
 	//LCDDelay(2);
-	LCD_WaitLong(5);
-	for(i = 0; i < 120; i++);
+	LCD_WaitLong(1);
 	Chip_GPIO_SetPinOutLow(LPC_GPIO,LCD_E_PORT,LCD_E_PIN);
 }
 void LCD_WComando4(uint8_t comando){
@@ -151,9 +148,10 @@ void Display_lcd( char *msg , char r , char p ){
 
 /**
  * 
- *  |  0 mmHg  -> corrido 4-len posiciones 
- *  | 10 mmHg
- *  |100 mmHg
+ *  |   0 mmHg  -> corrido 4-len posiciones 
+ *  |  10 mmHg
+ *  | 100 mmHg
+ * 	|1000 mmHg
  */
 void LCD_InstantPressure (int value){
     char num[LCD_N_CHARACTERS];
@@ -195,13 +193,19 @@ void LCD_diffPrint(lcd_row_t row, const char *str){
             break;
     }
 
+	//replace null for spaces
+	for(int i = 0; i < LCD_N_CHARACTERS; i++){
+		if(msg[i] == '\0'){
+			msg[i] = ' ';
+		}
+	}
+
     //check for differences
     for (int i = 0; i < LCD_N_CHARACTERS; i++)
     {
         if(msg_previous[row][i] != msg[i]){
-
-            LCD_WComando8(i + position);
-            LCD_WDato( (uint8_t) msg[i]);
+			LCD_WComando8(i + position);
+			LCD_WDato( (uint8_t) msg[i]);
         }
     }
     

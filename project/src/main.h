@@ -22,6 +22,7 @@
 typedef struct{
 	adc_handler_t adc;
 	sp_handler_t sp;
+	display_handler_t display;
 }handler_t;
 
 #define delay(ticks)			\

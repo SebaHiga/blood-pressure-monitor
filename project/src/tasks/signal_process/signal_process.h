@@ -10,13 +10,13 @@
 #define TOP_PRESSURE    220
 #define BOTTOM_PRESSURE 90
 
-#define UPPER_VAL       150
+#define UPPER_VAL       600
 #define MIDDLE_VAL      0
-#define FALL_VAL        130
+#define FALL_VAL        550
 #define MAX_VAL         4000
 #define MIN_VAL         -4000
 #define MAX_HEIGHT      3000
-#define MIN_LENGHT      4
+#define MIN_LENGHT      400
 
 #define MAP_2_SYS_RATIO 0.55
 #define MAP_2_DIA_RATIO 0.80

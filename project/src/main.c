@@ -27,7 +27,7 @@ int main(void) {
 	//signal process
 	handler.sp.status = 0;
 	handler.sp.offset = 0;
-	handler.sp.status = measuring;
+	handler.sp.status = idle;
 
 	//pulse
 	handler.sp.pulse_param.upper = UPPER_VAL;
@@ -39,12 +39,15 @@ int main(void) {
 	handler.sp.pulse_param.map2sys = MAP_2_SYS_RATIO;
 	handler.sp.pulse_param.map2dia = MAP_2_DIA_RATIO;
 
-	LCD_printf(row1, "Pressure");
+	handler.display.delay = DISPLAY_DELAY;
+
+	LCD_printf(row1, "Ready");
 
     while(1) {
     	TareaLeeSerie();
 	    Task_ADC();
 		Task_SignalProcess();
+		Task_display();
 		
    		__WFI();
     }
