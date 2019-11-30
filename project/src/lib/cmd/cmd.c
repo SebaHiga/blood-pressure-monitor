@@ -94,16 +94,17 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
         adc->delay = atoi(argv[1]);
     }
     else if(EQUAL_STRINGS(argv[0], "debug")){
-        if(argc < 1){
-            _log_smpl(error, "Please use on/off as arguments");
-            return;
-        }
+        if(argc < 1) return;
 
         if(EQUAL_STRINGS(argv[1], "on")){
             adc->debug = 1;
         }
-        else{
+        else if(EQUAL_STRINGS(argv[1], "off")){
             adc->debug = 0;
+        }
+        else if(EQUAL_STRINGS(argv[1], "show")){
+            if(argc < 2) return;
+            strcpy(adc->debug_mode, argv[2]);
         }
     }
 

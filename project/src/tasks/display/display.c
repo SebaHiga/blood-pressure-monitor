@@ -36,6 +36,8 @@ void Task_display(void){
 
         i++;
         if(i > 3) {i = 0;}
+
+        LCD_InstantPressure(Convert2mmHg(handler.adc.lowpass));
     }
     else if(handler.sp.status == end){
         static int i = 20; //10 seconds
@@ -44,6 +46,7 @@ void Task_display(void){
             i--;
         }
         else{
+            LCD_printf(row1, "Ready");
             handler.sp.status = idle;
         }
     }
