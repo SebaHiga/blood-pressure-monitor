@@ -5,7 +5,12 @@
 extern handler_t handler;
 
 void Task_display(void){
-    delay(handler.display.delay);
+
+    display_handler_t *display;
+
+    display = &handler.display;
+
+    DELAY(display->delay);
 
     if(handler.sp.status == idle){
         LCD_InstantPressure(Convert2mmHg(handler.adc.lowpass));
@@ -31,5 +36,15 @@ void Task_display(void){
 
         i++;
         if(i > 3) {i = 0;}
+    }
+    else if(handler.sp.status == end){
+        static int i = 20; //10 seconds
+
+        if(i){
+            i--;
+        }
+        else{
+            handler.sp.status = idle;
+        }
     }
 }

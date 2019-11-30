@@ -6,7 +6,7 @@ extern handler_t handler;
 
 void Task_ADC(void)
 {
-	delay(handler.adc.delay);
+	DELAY(handler.adc.delay);
 	_log(debug9, "ADC flag: %d", handler.adc.start);
 
 	if(handler.adc.start){
@@ -69,7 +69,7 @@ int ADC_read(enum CHIP_ADC_CHANNEL adc){
     
     switch(adc){
         case ADC_CH0:{
-//            val = iirFilterLP(val);
+        //    val = iirFilterLP(val);
         }break;
 
         case ADC_CH1:{

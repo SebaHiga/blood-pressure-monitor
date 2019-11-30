@@ -129,15 +129,23 @@ int findDIA(int map){
 
 void processPulse(int val){
     static int max, min;
-    static pulse_state_t state = rising;
     static int len = 0;
+    static pulse_state_t state = rising;
+
+    static sp_handler_t *sp;
+    static adc_handler_t *adc;
+    static pulse_parameters_t *pulse_param;
+
+    sp = &handler.sp;
+    adc = &handler.adc;
+    pulse_param = &handler.sp.pulse_param;
 
     if(val >= MAX_VAL) state = rising;
 
     switch(state){
         case rising:{
             //comienza a crecer
-            if(val > handler.sp.pulse_param.upper){
+            if(val > sp->pulse_param.upper){
                 max = 0;
                 min = MAX_VAL;
                 state = middle;
@@ -153,7 +161,7 @@ void processPulse(int val){
                 max = val;
             }
 
-            if(val < handler.sp.pulse_param.middle){
+            if(val < sp->pulse_param.middle){
                 state = falling;
             }
         }break;
@@ -166,23 +174,23 @@ void processPulse(int val){
                 min = val;
             }
 
-            if(val > handler.sp.pulse_param.fall){
+            if(val > pulse_param->fall){
 
                 int height = max - min;
 
-                if(height < handler.sp.pulse_param.max_height 
-                    && len > handler.sp.pulse_param.min_lenght){
+                if(height < pulse_param->max_height 
+                    && len > pulse_param->min_lenght){
 
                     //print to lcd
-                    LCD_InstantPressure((int) Convert2mmHg(handler.adc.lowpass));
+                    LCD_InstantPressure((int) Convert2mmHg(adc->lowpass));
 
                     //save into vect
                     if (pulse_record.index < HEIGHT_LEN_VECT){
-                        _log(info, "Pulse %d \tHeight %d\tLenght: %d", pulse_record.index, height, len);
-                        _log(debug4, "Max %d\tMin%d", max, min);
+                        _log(info, "Pulse %d \tHeight %d", pulse_record.index, height, len);
+                        _log(debug4, "Max %d\tMin%d\tLenght: %d", max, min);
 
                         pulse_record.height[pulse_record.index] = height;
-                        pulse_record.pressure[pulse_record.index] = handler.adc.lowpass;
+                        pulse_record.pressure[pulse_record.index] = adc->lowpass;
                         pulse_record.index++;
                     }   
                 }

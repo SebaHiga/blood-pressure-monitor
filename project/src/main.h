@@ -25,7 +25,7 @@ typedef struct{
 	display_handler_t display;
 }handler_t;
 
-#define delay(ticks)			\
+#define DELAY(ticks)			\
 {								\
 	static int _count = 0;		\
 	if(_count){					\

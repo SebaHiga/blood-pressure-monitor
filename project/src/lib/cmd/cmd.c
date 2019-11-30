@@ -70,14 +70,18 @@ void CMD_parse(const char* str){
 void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     _log_smpl(debug0, "In command adc");
 
+    adc_handler_t *adc;
+
+    adc = &handler.adc;
+
     if(argc == 0) return;
 
     if(EQUAL_STRINGS(argv[0], "start")){
-        handler.adc.start = 1;
+        adc->start = 1;
         Chip_GPIO_SetPinOutHigh(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
     }
     else if(EQUAL_STRINGS(argv[0], "stop")){
-        handler.adc.start = 0;
+        adc->start = 0;
         Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);
     }
     else if(EQUAL_STRINGS(argv[0], "delay")){
@@ -87,7 +91,7 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
         }
 
         //error prone
-        handler.adc.delay = atoi(argv[1]);
+        adc->delay = atoi(argv[1]);
     }
     else if(EQUAL_STRINGS(argv[0], "debug")){
         if(argc < 1){
@@ -96,10 +100,10 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
         }
 
         if(EQUAL_STRINGS(argv[1], "on")){
-            handler.adc.debug = 1;
+            adc->debug = 1;
         }
         else{
-            handler.adc.debug = 0;
+            adc->debug = 0;
         }
     }
 
@@ -110,7 +114,7 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
         }
 
         //error prone
-        handler.adc.pressure = atoi(argv[1]);
+        adc->pressure = atoi(argv[1]);
     }
     else{
         _log(error, "Error in argument %s\n", argv[0]);
@@ -143,35 +147,45 @@ void CMD_logger(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
 void CMD_pulse(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
     _log_smpl(debug0, "In command pulse");
 
+    sp_handler_t *sp;
+    sp = &handler.sp;
+
     if(argc == 0) return;
 
     if(EQUAL_STRINGS(argv[0], "upper")){
         if(argc < 1) return;
-        handler.sp.pulse_param.upper = atoi(argv[1]);
+        sp->
+        pulse_param.upper = atoi(argv[1]);
     }
     else if(EQUAL_STRINGS(argv[0], "middle")){
         if(argc < 1) return;
-        handler.sp.pulse_param.middle = atoi(argv[1]);
+        sp->
+        pulse_param.middle = atoi(argv[1]);
     }
     else if(EQUAL_STRINGS(argv[0], "fall")){
         if(argc < 1) return;
-        handler.sp.pulse_param.fall = atoi(argv[1]);
+        sp->
+        pulse_param.fall = atoi(argv[1]);
     }
     else if(EQUAL_STRINGS(argv[0], "height")){
         if(argc < 1) return;
-        handler.sp.pulse_param.max_height = atoi(argv[1]);
+        sp->
+        pulse_param.max_height = atoi(argv[1]);
     }
     else if(EQUAL_STRINGS(argv[0], "lenght")){
         if(argc < 1) return;
-        handler.sp.pulse_param.min_lenght = atoi(argv[1]);
+        sp->
+        pulse_param.min_lenght = atoi(argv[1]);
     }
     else if(EQUAL_STRINGS(argv[0], "map2dia")){
         if(argc < 1) return;
-        handler.sp.pulse_param.map2dia = atoi(argv[1]);
+        sp->
+        pulse_param.map2dia = atoi(argv[1]);
     }
     else if(EQUAL_STRINGS(argv[0], "map2sys")){
         if(argc < 1) return;
-        handler.sp.pulse_param.map2sys = atoi(argv[1]);
+        sp->
+        pulse_param.map2sys = atoi(argv[1]);
     }
 
     if(argc > 1){
