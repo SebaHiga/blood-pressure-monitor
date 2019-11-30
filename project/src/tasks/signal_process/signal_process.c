@@ -47,9 +47,6 @@ void Task_SignalProcess(void){
                 
                 pulse_record.index = 0;
                 memset(pulse_record.height, 0, HEIGHT_LEN_VECT);
-
-                LCD_printf(row1, "Pressure");
-                LCD_printf(row2, "");
             }
         }break;
 
@@ -61,7 +58,12 @@ void Task_SignalProcess(void){
 
 void analyzeRecords(void){
     int sys, dia;
-    int map = findMAP();
+    int map;
+
+    removeWeird();
+    smoothPulse();
+
+    map = findMAP();
 
     _log(info, "Height of MAP is: %d", pulse_record.height[map]);
 
@@ -186,8 +188,8 @@ void processPulse(int val){
 
                     //save into vect
                     if (pulse_record.index < HEIGHT_LEN_VECT){
-                        _log(info, "Pulse %d \tHeight %d", pulse_record.index, height, len);
-                        _log(debug4, "Max %d\tMin%d\tLenght: %d", max, min);
+                        _log(info, "Pulse %d\tHeight %d", pulse_record.index, height, len);
+                        _log(debug4, "Max %d\tMin %d\tLenght %d", max, min);
 
                         pulse_record.height[pulse_record.index] = height;
                         pulse_record.pressure[pulse_record.index] = adc->lowpass;
@@ -206,6 +208,76 @@ float Convert2mmHg (int value){
   return ((value * 0.101681638333) - 7.11367814086);
 }
 
+#define TOLERANCE    0.2
+#define HEIGHT_TOLERANCE(val1, val2, tol) (float)val1 > (float)val2*(float)(1+tol) || (float)val1 < (float)val2*(float)(1-tol)
 
 
+void removeWeird(void){
 
+    for(int i = 0; i < pulse_record.index; i++){                  
+        if(HEIGHT_TOLERANCE(pulse_record.height[i], pulse_record.height[i+1], TOLERANCE)){
+             removePulse(i + 1);
+        }
+    }
+
+}
+
+void removePulse(int index){
+    int amount = pulse_record.index - index - 1;
+
+    _log(debug5, "Removing pulse %d", index);
+
+
+    pulse_record.index--;
+
+    memcpy(pulse_record.height + index, pulse_record.height + index + 1, amount);
+    memcpy(pulse_record.pressure + index, pulse_record.pressure + index + 1, amount);
+
+    for(int i = 0; i < pulse_record.index; i++){
+        _log(debug7, "Pulse %d\t Height %d", i, pulse_record.height[i]);
+    }
+}
+
+void smoothPulse(void){
+    for(int i = 0; i < 40; i++){
+        smoothenFilter(pulse_record.height[0]);
+    }
+
+    for(int i = 0; i < pulse_record.index; i++){
+        pulse_record.height[i] = smoothenFilter(pulse_record.height[i]);
+    }
+}
+
+uint16_t smoothenFilter (uint16_t data)
+{
+  uint16_t i;
+  static uint16_t x[orderFilterLP] = {0};
+  static uint16_t y[orderFilterLP] = {0};
+  
+  const float b [] = {
+       0.434739348285,  0.869478696569,  0.434739348285};
+       
+  const float a [] = {
+       1.            ,  0.519303409225,  0.219653983914};
+  
+  uint16_t filtered;
+
+  filtered =  b[0] * (float)data + b[1] * x[0] + b[2] * x[1]//
+                                 - a[1] * y[0] - a[2] * y[1];//
+
+  if(filtered > 32767) filtered = 450;  
+
+  for(i = orderFilterLP-1; i!=0; i--)
+  {
+    x[i] = x[i-1];
+  }
+  x[0]=(float)data;
+
+  for(i = orderFilterLP-1; i!=0; i--)
+  {
+    y[i] = y[i-1];
+  }
+  y[0]=filtered;
+
+  return filtered;
+}
