@@ -102,7 +102,7 @@ void CMD_adc(int argc, char argv[CMD_MAX_ARGS][CMD_STRLEN_ARGS]){
         else if(EQUAL_STRINGS(argv[1], "off")){
             adc->debug = 0;
         }
-        else if(EQUAL_STRINGS(argv[1], "show")){
+        else if(EQUAL_STRINGS(argv[1], "s")){
             if(argc < 2) return;
             strcpy(adc->debug_mode, argv[2]);
         }

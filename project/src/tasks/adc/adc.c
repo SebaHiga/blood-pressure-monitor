@@ -6,19 +6,31 @@ extern handler_t handler;
 
 void Task_ADC(void)
 {
-    
 
-	DELAY(handler.adc.delay);
-	_log(debug9, "ADC flag: %d", handler.adc.start);
+    adc_handler_t *adc;
 
-	if(handler.adc.start){
-        handler.adc.lowpass = ADC_read(ADC_CH0);
-        handler.adc.highpass = ADC_read(ADC_CH1);
+    adc = &handler.adc;
+
+	DELAY(adc->delay);
+	_log(debug9, "ADC flag: %d", adc->start);
+
+	if(adc->start){
+        adc->lowpass = ADC_read(ADC_CH0);
+        adc->highpass = ADC_read(ADC_CH1);
 
         //low pass filtered
-		if(handler.adc.debug){
-            if(EQUAL_STRINGS())
-			UART_printf("%d, %d, %d\r\n", handler.adc.highpass, handler.adc.lowpass, handler.adc.pressure);
+		if(adc->debug){
+            if(EQUAL_STRINGS(adc->debug_mode, "all")){
+			    UART_printf("%d, %d, %d\r\n", adc->highpass, adc->lowpass, adc->pressure);
+            }
+            else if(EQUAL_STRINGS(adc->debug_mode, "lp")){
+			    UART_printf("%d, %d\r\n", adc->lowpass, adc->pressure);
+
+            }
+            else if(EQUAL_STRINGS(adc->debug_mode, "hp")){
+			    UART_printf("%d, %d\r\n", adc->highpass, adc->pressure);
+
+            }
 		}
 	}
 }

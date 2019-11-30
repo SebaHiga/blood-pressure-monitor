@@ -193,10 +193,11 @@ void processPulse(int val){
                         pulse_record.pressure[pulse_record.index] = adc->lowpass;
                         pulse_record.index++;
                     }   
+                    state = rising;
                 }
-
-                state = rising;
             }
+
+            if(len > 1500) state = rising;
         }break;
     }
 
