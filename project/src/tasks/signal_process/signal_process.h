@@ -10,9 +10,9 @@
 #define TOP_PRESSURE    220
 #define BOTTOM_PRESSURE 90
 
-#define UPPER_VAL       600
-#define MIDDLE_VAL      0
-#define FALL_VAL        550
+#define UPPER_VAL       200
+#define MIDDLE_VAL      20
+#define FALL_VAL        150
 #define MAX_VAL         4000
 #define MIN_VAL         -4000
 #define MAX_HEIGHT      3000
@@ -61,6 +61,9 @@ typedef struct{
 float Convert2mmHg (int value);
 void processPulse(int value);
 void analyzeRecords(void);
+void removePulse(int index);
+void smoothPulse(void);
+uint16_t smoothenFilter (uint16_t data);
 
 int findMAP(void);
 int findSYS(int);
