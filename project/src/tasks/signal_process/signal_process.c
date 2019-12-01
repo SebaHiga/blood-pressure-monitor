@@ -32,11 +32,18 @@ void Task_SignalProcess(void){
                 int systolic = Convert2mmHg(handler.sp.sys);
                 int diastolic = Convert2mmHg(handler.sp.dia);
 
-                LCD_printf(row1, "SYS: %d", systolic);
-                LCD_printf(row2, "DIA: %d", diastolic);
+                if(systolic > 0 && diastolic > 0){
+                    LCD_printf(row1, "SYS: %d", systolic);
+                    LCD_printf(row2, "DIA: %d", diastolic);
 
-                _log(info, "Systolic pressure:\t%d", systolic);
-                _log(info, "Diastolic pressure:\t%d", diastolic);
+                    _log(info, "Systolic pressure:\t%d", systolic);
+                    _log(info, "Diastolic pressure:\t%d", diastolic);
+                }
+                else{
+                    LCD_printf(row1, "ERROR");
+
+                    _log_smpl(error, "Error analizing diastolic/systolic pressures, please read tech manual");
+                }
             }
         }break;
 
@@ -60,7 +67,7 @@ void analyzeRecords(void){
     int sys, dia;
     int map;
 
-    removeWeird();
+    // removeWeird();
     smoothPulse();
 
     map = findMAP();
@@ -157,12 +164,12 @@ void processPulse(int val){
 
         case middle:{
             len++;
+            LED_ON;
 
             //busco el maximo
             if(val > max){
                 max = val;
             }
-
             if(val < sp->pulse_param.middle){
                 state = falling;
             }
@@ -177,9 +184,9 @@ void processPulse(int val){
             }
 
             if(val > pulse_param->fall){
-
                 int height = max - min;
 
+                LED_OFF;
                 if(height < pulse_param->max_height 
                     && len > pulse_param->min_lenght){
 
@@ -246,6 +253,7 @@ void smoothPulse(void){
 
     for(int i = 0; i < pulse_record.index; i++){
         pulse_record.height[i] = smoothenFilter(pulse_record.height[i]);
+        _log(debug1, "Smooth pressure height: %d", pulse_record.height[i]);
     }
 }
 

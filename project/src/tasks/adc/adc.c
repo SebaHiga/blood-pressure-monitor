@@ -83,10 +83,10 @@ int ADC_read(enum CHIP_ADC_CHANNEL adc){
     
     switch(adc){
         case ADC_CH0:{
-        //    val = iirFilterLP(val);
         }break;
 
         case ADC_CH1:{
+            val = iirFilterLP(val);
             val = iirFilterHP(val);
         }break;
         

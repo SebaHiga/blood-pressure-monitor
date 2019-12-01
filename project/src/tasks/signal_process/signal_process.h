@@ -16,7 +16,7 @@
 #define MAX_VAL         4000
 #define MIN_VAL         -4000
 #define MAX_HEIGHT      3000
-#define MIN_LENGHT      400
+#define MIN_LENGHT      300
 
 #define MAP_2_SYS_RATIO 0.55
 #define MAP_2_DIA_RATIO 0.80

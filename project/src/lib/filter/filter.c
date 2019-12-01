@@ -61,7 +61,7 @@ int iirFilterHP (uint16_t data)
   filtered =  b[0] * (float)data + b[1] * x[0] + b[2] * x[1]//
                                  - a[1] * y[0] - a[2] * y[1];//
 
-  if(filtered > 32767) filtered = 450;  
+  // if(filtered > 32767) filtered = 450;  
 
   for(i = orderFilterLP-1; i!=0; i--)
   {
