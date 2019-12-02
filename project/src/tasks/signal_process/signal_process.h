@@ -7,16 +7,16 @@
 
 #define MAX_PRESSURE    25341
 
-#define TOP_PRESSURE    220
-#define BOTTOM_PRESSURE 90
+#define TOP_PRESSURE    175
+#define BOTTOM_PRESSURE 85
 
 #define UPPER_VAL       200
-#define MIDDLE_VAL      20
+#define MIDDLE_VAL      -50
 #define FALL_VAL        150
 #define MAX_VAL         4000
 #define MIN_VAL         -4000
 #define MAX_HEIGHT      3000
-#define MIN_LENGHT      300
+#define MIN_LENGHT      350
 
 #define MAP_2_SYS_RATIO 0.55
 #define MAP_2_DIA_RATIO 0.80

@@ -9,6 +9,7 @@ void Task_display(void){
     display_handler_t *display;
     sp_handler_t *sp;
     adc_handler_t *adc;
+    static int i; //10 seconds
 
     display = &handler.display;
     sp = &handler.sp;
@@ -20,9 +21,9 @@ void Task_display(void){
         LCD_InstantPressure(Convert2mmHg(adc->lowpass));
     }
     else if(sp->status == measuring){
-        static int i = 0;
+        static int j = 0;
 
-        switch(i){
+        switch(j){
             case 0:{
                 LCD_printf(row1, "Please wait");
             }break;
@@ -38,13 +39,14 @@ void Task_display(void){
 
         }
 
-        i++;
-        if(i > 3) {i = 0;}
+        j++;
+        if(j > 3) {j = 0;}
+
+        i = 20;
 
         LCD_InstantPressure(Convert2mmHg(adc->lowpass));
     }
     else if(sp->status == end){
-        static int i = 20; //10 seconds
 
         if(i){
             i--;
