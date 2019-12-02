@@ -21,10 +21,13 @@
 #define MAP_2_SYS_RATIO 0.55
 #define MAP_2_DIA_RATIO 0.80
 
+#define MIN_PULSES 10
+
 enum sig_process_status_t{
     idle = 0,
     measuring,
-    end
+    end,
+    wtf
 };
 
 typedef enum{
@@ -60,10 +63,10 @@ typedef struct{
 
 float Convert2mmHg (int value);
 void processPulse(int value);
-void analyzeRecords(void);
+int analyzeRecords(void);
 void removePulse(int index);
 void smoothPulse(void);
-uint16_t smoothenFilter (uint16_t data);
+int smoothenFilter (int data);
 
 int findMAP(void);
 int findSYS(int);

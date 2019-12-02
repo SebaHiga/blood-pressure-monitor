@@ -5,11 +5,11 @@
     Order = 2
     fc = 10
 */
-uint16_t iirFilterLP (uint16_t data)
+int iirFilterLP (int data)
 {
   uint16_t i;
-  static uint16_t x[orderFilterLP] = {0};
-  static uint16_t y[orderFilterLP] = {0};
+  static int x[orderFilterLP] = {0};
+  static int y[orderFilterLP] = {0};
   
   const float b [] = {
        0.003621681515,  0.00724336303 ,  0.003621681515};
@@ -17,12 +17,10 @@ uint16_t iirFilterLP (uint16_t data)
   const float a [] = {
         1.            , -1.822694925196,  0.837181651256};
   
-  uint16_t filtered;
+  int filtered;
 
   filtered =  b[0] * (float)data + b[1] * x[0] + b[2] * x[1]//
                                  - a[1] * y[0] - a[2] * y[1];//
-
-  if(filtered > 32767) filtered = 450;  
 
   for(i = orderFilterLP-1; i!=0; i--)
   {
@@ -44,7 +42,7 @@ uint16_t iirFilterLP (uint16_t data)
     Order = 2
     fc = 10
 */
-int iirFilterHP (uint16_t data)
+int iirFilterHP (int data)
 {
   uint16_t i;
   static int x[orderFilterLP] = {0};

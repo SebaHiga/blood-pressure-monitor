@@ -8,13 +8,16 @@ static pulse_record_t pulse_record;
 void Task_SignalProcess(void){
     int pressure = Convert2mmHg(handler.adc.lowpass);
     
-    switch (handler.sp.status){
+    sp_handler_t *sp;
+    sp = &handler.sp;
+
+    switch (sp->status){
         case idle:{
 
             if(pressure > TOP_PRESSURE){
                 _log_smpl(info, "Starting measuring pressure");
 
-            	handler.sp.status = measuring;
+            	sp->status = measuring;
 
                 pulse_record.index = 0;
                 memset(pulse_record.height, 0, HEIGHT_LEN_VECT);
@@ -25,25 +28,29 @@ void Task_SignalProcess(void){
             processPulse(handler.adc.highpass);
             if(pressure < BOTTOM_PRESSURE){
                 _log_smpl(info, "Finished measuring pressure");
-                handler.sp.status = end;
+                sp->status = end;
 
-                analyzeRecords();
+                if(!analyzeRecords()){
+                    int systolic = Convert2mmHg(sp->sys);
+                    int diastolic = Convert2mmHg(sp->dia);
 
-                int systolic = Convert2mmHg(handler.sp.sys);
-                int diastolic = Convert2mmHg(handler.sp.dia);
+                    if(systolic > 0 && diastolic > 0){
+                        LCD_printf(row1, "SYS: %d", systolic);
+                        LCD_printf(row2, "DIA: %d", diastolic);
 
-                if(systolic > 0 && diastolic > 0){
-                    LCD_printf(row1, "SYS: %d", systolic);
-                    LCD_printf(row2, "DIA: %d", diastolic);
-
-                    _log(info, "Systolic pressure:\t%d", systolic);
-                    _log(info, "Diastolic pressure:\t%d", diastolic);
+                        _log(info, "Systolic pressure:\t%d", systolic);
+                        _log(info, "Diastolic pressure:\t%d", diastolic);
+                    }
+                    else{
+                        sp->status = wtf;
+                        _log_smpl(error, "Error analizing diastolic/systolic pressures, please read tech manual");
+                    }
                 }
                 else{
-                    LCD_printf(row1, "ERROR");
-
-                    _log_smpl(error, "Error analizing diastolic/systolic pressures, please read tech manual");
+                    sp->status = wtf;
+                    _log_smpl(error, "No enough samples taken");
                 }
+
             }
         }break;
 
@@ -57,15 +64,21 @@ void Task_SignalProcess(void){
             }
         }break;
 
+        case wtf:{
+
+        }break;
+
         default:{
             _log_smpl(error, "Error in state");
         }
     }
 }
 
-void analyzeRecords(void){
+int analyzeRecords(void){
     int sys, dia;
     int map;
+
+    if(pulse_record.index < MIN_PULSES) return 1;
 
     // removeWeird();
     smoothPulse();
@@ -85,6 +98,7 @@ void analyzeRecords(void){
         handler.sp.dia = pulse_record.pressure[dia];
     }
 
+    return 0;
 }
 
 int findMAP(void){
@@ -154,6 +168,7 @@ void processPulse(int val){
     switch(state){
         case rising:{
             //comienza a crecer
+            LED_OFF;
             if(val > sp->pulse_param.upper){
                 max = 0;
                 min = MAX_VAL;
@@ -164,7 +179,6 @@ void processPulse(int val){
 
         case middle:{
             len++;
-            LED_ON;
 
             //busco el maximo
             if(val > max){
@@ -186,7 +200,7 @@ void processPulse(int val){
             if(val > pulse_param->fall){
                 int height = max - min;
 
-                LED_OFF;
+                LED_ON;
                 if(height < pulse_param->max_height 
                     && len > pulse_param->min_lenght){
 
@@ -257,11 +271,11 @@ void smoothPulse(void){
     }
 }
 
-uint16_t smoothenFilter (uint16_t data)
+int smoothenFilter (int data)
 {
   uint16_t i;
-  static uint16_t x[orderFilterLP] = {0};
-  static uint16_t y[orderFilterLP] = {0};
+  static int x[orderFilterLP] = {0};
+  static int y[orderFilterLP] = {0};
   
   const float b [] = {
        0.434739348285,  0.869478696569,  0.434739348285};
@@ -269,12 +283,10 @@ uint16_t smoothenFilter (uint16_t data)
   const float a [] = {
        1.            ,  0.519303409225,  0.219653983914};
   
-  uint16_t filtered;
+  int filtered;
 
   filtered =  b[0] * (float)data + b[1] * x[0] + b[2] * x[1]//
                                  - a[1] * y[0] - a[2] * y[1];//
-
-  if(filtered > 32767) filtered = 450;  
 
   for(i = orderFilterLP-1; i!=0; i--)
   {
