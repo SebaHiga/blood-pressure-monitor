@@ -23,6 +23,7 @@ int main(void) {
 	handler.adc.pressure = 0;
 	handler.adc.debug = 0;
 	handler.adc.new_val = 0;
+	strcpy(handler.adc.debug_mode, "all");
 
 	//signal process
 	handler.sp.status = 0;

@@ -5,7 +5,7 @@
 
 #define orderFilterLP 2
 
-uint16_t iirFilterLP (uint16_t data);
-int iirFilterHP (uint16_t data);
+int iirFilterLP (int data);
+int iirFilterHP (int data);
 
 #endif
