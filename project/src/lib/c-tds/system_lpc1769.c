@@ -99,10 +99,10 @@ void SYSTEM_Configure_Required_Mode(void)
         	//Prepare tasks
             InitHardware();
 
-            SCH_Add_Task(TareaLeeSerie, 1, 10, 20, 0);
-            SCH_Add_Task(Task_ADC, 1, 10, 20, 0);
-            SCH_Add_Task(Task_SignalProcess, 1, 10, 20, 0);
-            SCH_Add_Task(Task_display, 1, 10, 20, 0);
+            SCH_Add_Task(TareaLeeSerie, 1, 1, 2000, 0);
+            SCH_Add_Task(Task_ADC, 1, 1, 2000, 0);
+            SCH_Add_Task(Task_SignalProcess, 1, 1, 2000, 0);
+            SCH_Add_Task(Task_display, 1, 1, 2000, 0);
 
 
         	// Add tasks to schedule.

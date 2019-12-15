@@ -13,7 +13,7 @@
 handler_t handler;
 
 int main(void) {
-    // InitHardware();
+    //  InitHardware();
 
 	SYSTEM_Init();
 	
@@ -122,7 +122,7 @@ void InitHardware(void)
 	UART_init();
 
 	/*Inicializo el systick*/
-	SysTick_Config(SystemCoreClock/TIC_1MS);
+	// SysTick_Config(SystemCoreClock/TIC_1MS);
 
 	/*Apago el led rojo*/
 	Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);

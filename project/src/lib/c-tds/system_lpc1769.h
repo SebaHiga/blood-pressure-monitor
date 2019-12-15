@@ -16,7 +16,7 @@
 // ------ Public constants -----------------------------------------
 // Required system operating frequency (in Hz)
 // Will be checked in the scheduler initialization file
-#define Required_SystemCoreClock (100000000)	// 100MHz
+#define Required_SystemCoreClock (96000000)	// 100MHz
 
 #define SysTick_RateHz	(1000)				// 1000 ticks per Second
 

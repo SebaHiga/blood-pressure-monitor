@@ -37,7 +37,7 @@ uint32_t Fault_code_G;
 sTask SCH_tasks_G[SCH_MAX_TASKS];
 
 // The current tick count
-static volatile uint32_t Tick_count_G = 0;
+static uint32_t volatile Tick_count_G = 0;
 
 static volatile uint32_t ITask;
 
@@ -135,7 +135,8 @@ void SCH_Start(void)
 void SysTick_Handler(void)
 {
     // Increment tick count (only)
-    Tick_count_G++;
+    Tick_count_G += 1;
+
 }
 
 
@@ -164,7 +165,7 @@ void SCH_Dispatch_Tasks(void)
     while (Update_required)
     {
     	for(int i = 0; i < Index; i++){
-            if (SCH_tasks_G[Index].pTask && (!--(SCH_tasks_G[i].Delay)))
+            if (SCH_tasks_G[i].pTask && (!--(SCH_tasks_G[i].Delay)))
             {
             	ITask = i;
 
