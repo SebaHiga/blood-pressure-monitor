@@ -14,6 +14,9 @@
 #include "utils.h"
 #include "filter.h"
 #include "lcd.h"
+#include "scheduler_lpc1769.h"
+#include "system_lpc1769.h"
+
 
 #include <cr_section_macros.h>
 
