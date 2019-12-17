@@ -18,7 +18,13 @@ void Task_display(void){
     DELAY(display->delay);
 
     if(sp->status == idle){
-        LCD_InstantPressure(Convert2mmHg(adc->lowpass));
+        float mmhg = Convert2mmHg(adc->lowpass);
+        if(mmhg > 100){
+            LCD_InstantPressure(Convert2mmHg(adc->lowpass));
+        }
+        else{
+            LCD_printf(row2, "");
+        }
     }
     else if(sp->status == measuring){
         static int j = 0;

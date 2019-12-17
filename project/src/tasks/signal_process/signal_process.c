@@ -80,6 +80,9 @@ int analyzeRecords(void){
 
     if(pulse_record.index < MIN_PULSES) return 1;
 
+    removePulse(0);
+    removePulse(0);
+
     // removeWeird();
     smoothPulse();
 
@@ -204,8 +207,10 @@ void processPulse(int val){
                 if(height < pulse_param->max_height 
                     && len > pulse_param->min_lenght){
 
+                    float mmhg = Convert2mmHg(adc->lowpass);
+
                     //print to lcd
-                    LCD_InstantPressure((int) Convert2mmHg(adc->lowpass));
+                    LCD_InstantPressure((int) mmhg);
 
                     //save into vect
                     if (pulse_record.index < HEIGHT_LEN_VECT){
@@ -227,7 +232,7 @@ void processPulse(int val){
 }
 
 float Convert2mmHg (int value){
-  return ((value * 0.101681638333) - 7.11367814086);
+  return ((value * 0.117119921821) - 17.2298311519);
 }
 
 #define TOLERANCE    0.2
@@ -267,7 +272,7 @@ void smoothPulse(void){
 
     for(int i = 0; i < pulse_record.index; i++){
         pulse_record.height[i] = smoothenFilter(pulse_record.height[i]);
-        _log(debug1, "Smooth pressure height: %d", pulse_record.height[i]);
+        _log(debug1, "Height: %d", pulse_record.height[i]);
     }
 }
 
@@ -278,10 +283,10 @@ int smoothenFilter (int data)
   static int y[orderFilterLP] = {0};
   
   const float b [] = {
-       0.434739348285,  0.869478696569,  0.434739348285};
+       0.145323883877,  0.290647767754,  0.145323883877};
        
   const float a [] = {
-       1.            ,  0.519303409225,  0.219653983914};
+       1.            , -0.671029090774,  0.252324626282};
   
   int filtered;
 
