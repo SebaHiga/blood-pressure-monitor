@@ -67,7 +67,7 @@ void LCD_WaitLong(uint16_t ciclos){
 
 	for(i=0;i<ciclos;i++)
 	{
-		for(x = 0;x < 0x4FF6;x++);
+		for(x = 0;x < 0x4000;x++);
 	}
 }
 void LCD_WaitShort(uint8_t ciclos){

@@ -48,8 +48,6 @@ int main(void) {
 
 	LCD_printf(row1, "Ready");
 
-
-
     while(1) {
     	SCH_Dispatch_Tasks();
     }
