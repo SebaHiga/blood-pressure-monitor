@@ -6,17 +6,31 @@ extern handler_t handler;
 
 void Task_ADC(void)
 {
-	delay(handler.adc.delay);
-	_log(debug9, "ADC flag: %d", handler.adc.start);
 
-	if(handler.adc.start){
-        handler.adc.lowpass = ADC_read(ADC_CH0);
-        handler.adc.highpass = ADC_read(ADC_CH1);
+    adc_handler_t *adc;
+
+    adc = &handler.adc;
+
+	DELAY(adc->delay);
+	_log(debug9, "ADC flag: %d", adc->start);
+
+	if(adc->start){
+        adc->lowpass = ADC_read(ADC_CH0);
+        adc->highpass = ADC_read(ADC_CH1);
 
         //low pass filtered
-		if(handler.adc.debug){
-			// UART_printf("%d, %d, %d\r\n", handler.adc.highpass, handler.adc.lowpass, handler.adc.pressure);
-            UART_printf("%d, %d\r\n",handler.adc.lowpass, handler.adc.pressure);
+		if(adc->debug){
+            if(EQUAL_STRINGS(adc->debug_mode, "all")){
+			    UART_printf("%d, %d, %d\r\n", adc->highpass, adc->lowpass, adc->pressure);
+            }
+            else if(EQUAL_STRINGS(adc->debug_mode, "lp")){
+			    UART_printf("%d, %d\r\n", adc->lowpass, adc->pressure);
+
+            }
+            else if(EQUAL_STRINGS(adc->debug_mode, "hp")){
+			    UART_printf("%d, %d\r\n", adc->highpass, adc->pressure);
+
+            }
 		}
 	}
 }
@@ -69,10 +83,10 @@ int ADC_read(enum CHIP_ADC_CHANNEL adc){
     
     switch(adc){
         case ADC_CH0:{
-//            val = iirFilterLP(val);
         }break;
 
         case ADC_CH1:{
+            val = iirFilterLP(val);
             val = iirFilterHP(val);
         }break;
         

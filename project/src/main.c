@@ -13,8 +13,10 @@
 handler_t handler;
 
 int main(void) {
-    InitHardware();
+    //  InitHardware();
 
+	SYSTEM_Init();
+	
     log_setLevel(debug0);
 
 	//Default parameters
@@ -23,6 +25,7 @@ int main(void) {
 	handler.adc.pressure = 0;
 	handler.adc.debug = 0;
 	handler.adc.new_val = 0;
+	strcpy(handler.adc.debug_mode, "all");
 
 	//signal process
 	handler.sp.status = 0;
@@ -41,15 +44,12 @@ int main(void) {
 
 	handler.display.delay = DISPLAY_DELAY;
 
+	SCH_Start();
+
 	LCD_printf(row1, "Ready");
 
     while(1) {
-    	TareaLeeSerie();
-	    Task_ADC();
-		Task_SignalProcess();
-		Task_display();
-		
-   		__WFI();
+    	SCH_Dispatch_Tasks();
     }
     return 0 ;
 }
@@ -96,15 +96,11 @@ void TareaLeeSerie(void)
 }
 
 
-void SysTick_Handler(void)
-{
-}
-
 void InitHardware(void)
 {
 	/*Inicializo el Clock del sistema*/
-	Chip_SetupXtalClocking();
-	SystemCoreClockUpdate();
+	// Chip_SetupXtalClocking();
+	// SystemCoreClockUpdate();
 
 	/*Inicializo los perifericos de pines e IOCON*/
 	Chip_GPIO_Init(LPC_GPIO);
@@ -124,7 +120,7 @@ void InitHardware(void)
 	UART_init();
 
 	/*Inicializo el systick*/
-	SysTick_Config(SystemCoreClock/TIC_1MS);
+	// SysTick_Config(SystemCoreClock/TIC_1MS);
 
 	/*Apago el led rojo*/
 	Chip_GPIO_SetPinOutLow(LPC_GPIO,LED_ROJO_PORT,LED_ROJO_PIN);

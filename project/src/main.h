@@ -14,6 +14,9 @@
 #include "utils.h"
 #include "filter.h"
 #include "lcd.h"
+#include "scheduler_lpc1769.h"
+#include "system_lpc1769.h"
+
 
 #include <cr_section_macros.h>
 
@@ -25,7 +28,7 @@ typedef struct{
 	display_handler_t display;
 }handler_t;
 
-#define delay(ticks)			\
+#define DELAY(ticks)			\
 {								\
 	static int _count = 0;		\
 	if(_count){					\

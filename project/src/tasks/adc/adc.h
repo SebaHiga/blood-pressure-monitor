@@ -9,6 +9,7 @@ typedef struct{
 	int delay;
     int pressure;
 	int debug;
+	char debug_mode[16];
 	int new_val;
 
 	int highpass;

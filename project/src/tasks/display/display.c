@@ -5,15 +5,31 @@
 extern handler_t handler;
 
 void Task_display(void){
-    delay(handler.display.delay);
 
-    if(handler.sp.status == idle){
-        LCD_InstantPressure(Convert2mmHg(handler.adc.lowpass));
+    display_handler_t *display;
+    sp_handler_t *sp;
+    adc_handler_t *adc;
+    static int i; //10 seconds
+
+    display = &handler.display;
+    sp = &handler.sp;
+    adc = &handler.adc;
+
+    DELAY(display->delay);
+
+    if(sp->status == idle){
+        float mmhg = Convert2mmHg(adc->lowpass);
+        if(mmhg > 100){
+            LCD_InstantPressure(Convert2mmHg(adc->lowpass));
+        }
+        else{
+            LCD_printf(row2, "");
+        }
     }
-    else if(handler.sp.status == measuring){
-        static int i = 0;
+    else if(sp->status == measuring){
+        static int j = 0;
 
-        switch(i){
+        switch(j){
             case 0:{
                 LCD_printf(row1, "Please wait");
             }break;
@@ -29,7 +45,45 @@ void Task_display(void){
 
         }
 
-        i++;
-        if(i > 3) {i = 0;}
+        j++;
+        if(j > 3) {j = 0;}
+
+        i = 20;
+
+        LCD_InstantPressure(Convert2mmHg(adc->lowpass));
+    }
+    else if(sp->status == end){
+
+        if(i){
+            i--;
+        }
+        else{
+            LCD_printf(row1, "Ready");
+            LCD_InstantPressure(Convert2mmHg(adc->lowpass));
+            sp->status = idle;
+        }
+    }
+    else if(sp->status == wtf){
+        static int i = 20;
+        static bool flag = false;
+
+        if(flag){
+            LCD_printf(row1, "ERROR");
+            LCD_printf(row2, " ");
+            flag = false;
+        }
+        else{
+            LCD_printf(row1, " ");
+            flag = true;
+        }
+
+        if(i){
+            i--;
+        }
+        else{
+            LCD_printf(row1, "Ready");
+            LCD_InstantPressure(Convert2mmHg(adc->lowpass));
+            sp->status = idle;
+        }
     }
 }
