@@ -99,12 +99,6 @@ void SYSTEM_Configure_Required_Mode(void)
         	//Prepare tasks
             InitHardware();
 
-            SCH_Add_Task(TareaLeeSerie, 1, 1, 2000, 0);
-            SCH_Add_Task(Task_ADC, 1, 1, 2000, 0);
-            SCH_Add_Task(Task_SignalProcess, 1, 1, 2000, 0);
-            SCH_Add_Task(Task_display, 1, 1, 2000, 0);
-
-
         	// Add tasks to schedule.
             // Parameters are:
             // 1. Task name
@@ -112,15 +106,10 @@ void SYSTEM_Configure_Required_Mode(void)
             // 3. Task period (in ticks): Must be > 0
             // 4. Task WCET (in microseconds)
             // 5. Task BCET (in microseconds)
-
-            // Add GPIO_SWITCH task
-            // SCH_Add_Task(GPIO_SWITCH_Update, 1, 10, 20, 0);
-
-            // Add GPIO_LED task
-            // SCH_Add_Task(GPIO_LED_Update, 1, 10, 20, 0);
-
-            // Add Heartbeat task
-            // SCH_Add_Task(HEARTBEAT_Update, 0, 1000, 20, 0);
+            SCH_Add_Task(TareaLeeSerie, 1, 1, 70, 0);
+            SCH_Add_Task(Task_ADC, 1, 1, 90, 0);
+            SCH_Add_Task(Task_SignalProcess, 1, 1, 260, 0);
+            SCH_Add_Task(Task_display, 1, 1, 2000, 0);
 
             break;
         }

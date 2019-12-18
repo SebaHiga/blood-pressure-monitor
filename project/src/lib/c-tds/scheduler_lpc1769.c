@@ -30,6 +30,8 @@ uint32_t Fault_code_G;
 
 #define TEST (TEST_1)
 
+// ------ Private constant definitions -----------------------------
+#define	ALLOWED_TIMING_VARIATION_us (20)
 
 // ------ Private variable -----------------------------------------
 // The array of tasks
@@ -153,7 +155,8 @@ void SCH_Dispatch_Tasks(void)
 {
     //uint32_t Index;
     uint32_t Update_required = 0;
-
+    uint32_t time_SCH;
+    
     __disable_irq(); // Protect shared resource (Tick_count_G)
     if (Tick_count_G > 0)
         {
@@ -164,29 +167,58 @@ void SCH_Dispatch_Tasks(void)
 
     while (Update_required)
     {
-    	for(int i = 0; i < Index; i++){
-            if (SCH_tasks_G[i].pTask && (!--(SCH_tasks_G[i].Delay)))
+        // Go through the task array
+        for (Index = 0; Index < SCH_MAX_TASKS; Index++)
             {
-            	ITask = i;
+            // Check if there is a task at this location
+            if (SCH_tasks_G[Index].pTask)
+                {
+                if (--SCH_tasks_G[Index].Delay == 0)
+                    {
+            			// Start of Task Dispatch Time Measurement
+            			DWT_Clear();    //aca comienza a medir el tiempo del sistema
 
-                (*SCH_tasks_G[i].pTask)(); // Run the task
+            			ITask = Index;
+                		SCH_tasks_G[Index].Debug.State = 0;
 
-                // All tasks are periodic in this design
-    			// - schedule task to run again
-    			SCH_tasks_G[i].Delay = SCH_tasks_G[i].Period;
+						MONITTOR_I_Start(	(uint32_t)SCH_tasks_G[Index].pTask,
+											SCH_tasks_G[Index].WCET,
+											SCH_tasks_G[Index].BCET,
+											ALLOWED_TIMING_VARIATION_us);//aca comienza a medir el tiempo de la tarea con el TIMER
+
+						(*SCH_tasks_G[Index].pTask)(); // Run the task
+
+						// All tasks are periodic in this design
+						// - schedule task to run again
+
+						SCH_tasks_G[Index].Debug.LET = MONITTOR_I_Stop();   //frena y guarda el valor del timer en us
+						SCH_tasks_G[Index].Debug.State |= SCH_DEBUG_TASK_RUN_OK;
+						SCH_tasks_G[Index].Debug.RunTimes++;
+                        if(SCH_tasks_G[Index].Debug.WCET < SCH_tasks_G[Index].Debug.LET){
+                            SCH_tasks_G[Index].Debug.WCET = SCH_tasks_G[Index].Debug.LET;
+                        }
+                        if (SCH_tasks_G[Index].Debug.BCET < SCH_tasks_G[Index].Debug.LET) {
+                          SCH_tasks_G[Index].Debug.BCET = SCH_tasks_G[Index].Debug.LET;
+                        }
+
+                        SCH_tasks_G[Index].Delay = SCH_tasks_G[Index].Period;
+
+                        // Stop of Task Dispatch Time Measurement
+                        time_SCH =
+                            DWT_GetTime() / 1000 - SCH_tasks_G[Index].Debug.LET;    //aca se guarta el tiempo de ejecucion del sistema
+                    }
+                }
             }
-        }
-
-        __disable_irq(); // Protect shared resource (Tick_count_G)
+        __disable_irq();
         if (Tick_count_G > 0)
-        {
+            {
             Tick_count_G--;
             Update_required = 1;
-        }
+            }
         else
-        {
+            {
             Update_required = 0;
-        }
+            }
         __enable_irq();
 	}
 

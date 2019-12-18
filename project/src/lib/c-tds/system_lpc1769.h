@@ -13,12 +13,13 @@
 #define _SYSTEM_H 1
 
 
+
 // ------ Public constants -----------------------------------------
 // Required system operating frequency (in Hz)
 // Will be checked in the scheduler initialization file
 #define Required_SystemCoreClock (96000000)	// 100MHz
 
-#define SysTick_RateHz	(1000)				// 1000 ticks per Second
+#define SysTick_RateHz	(1000)				// 1000 ticks per second
 
 #define SysTick_RatemS	(1000 / SysTick_RateHz)		// 1mS
 #define SysTick_RateuS	(1000 * SysTick_RatemS)		// 1000uS
@@ -44,11 +45,11 @@
 #define RETURN_FAULT 1
 
 
-// Two possible system modes
-typedef enum {FAIL_SILENT, NORMAL} eSystem_mode;
+// Three possible system modes
+typedef enum {FAIL_SILENT, NORMAL, FAULT_TASK_TIMING} eSystem_mode;
 
 
-// ------ Public data type -----------------------------------------
+// ------ Public data type declarations ----------------------------
 
 
 // ------ Public function prototypes -------------------------------

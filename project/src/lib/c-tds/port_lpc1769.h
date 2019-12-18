@@ -14,11 +14,7 @@
 
 
 // ------ Public constants -----------------------------------------
-
-// Allows Active Low or Active High led to be used (or other wiring variations)
-#define LED_ON	(true)
-#define LED_OFF (false)
-
+#define TIM_PRESCALE_USVAL	(100)
 
 // Heartbeat LED
 // Connected to "LED2" on LPC1769 board
@@ -42,15 +38,14 @@
 #define GPIO_LED_PIN_MODE (IOCON_MODE_INACT)
 #define GPIO_LED_PIN_FUNC (IOCON_FUNC0)
 
-
 // RGB LED
 // Connected to "BLUE" on LPC1769 board
 // Port 0, Pin 26
 
 
 // Allows NO or NC switch to be used (or other wiring variations)
-#define SW_PRESSED (false)
-#define SW_NOT_PRESSED (true)
+#define SW_PRESSED		(false)
+#define SW_NOT_PRESSED	(true)
 
 
 // SW2-PRESS SWITCH
@@ -92,7 +87,17 @@
 // Port 1, Pin 31
 
 
-// ------ Public data type -----------------------------------------
+// Add jumper wire on baseboard to control WDT
+// WDT is enabled *only* if jumper is in place.
+// (Jumper is read at init phase only)
+// Port 2, Pin 3 => Connected to "SW2 UP" on LPCXpresso baseboard
+#define WDT_JUMPER_PORT (2)
+#define WDT_JUMPER_PIN (3)
+#define WDT_JUMPER_PIN_MODE (IOCON_MODE_PULLUP)
+#define WDT_JUMPER_PIN_FUNC (IOCON_FUNC0)
+
+
+// ------ Public data type declarations ----------------------------
 
 
 // ------ Public function prototypes -------------------------------
